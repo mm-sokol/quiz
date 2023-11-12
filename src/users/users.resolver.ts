@@ -26,7 +26,7 @@ export class UsersResolver {
   @Mutation(() => User)
   updateUser(
     @Args({name: 'id', type: () => Int}) id: number,
-    @Args('updateUserInput') updateUserInput: UpdateUserInput) {
+    @Args('updateUserInput') updateUserInput: UpdateUserInput): Promise<User>{
     return this.usersService.update(id, updateUserInput);
   }
 

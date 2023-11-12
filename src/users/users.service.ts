@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { CreateUserInput } from './dto/create-user.input';
 import { UpdateUserInput } from './dto/update-user.input';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -11,7 +11,8 @@ export class UsersService {
   constructor(@InjectRepository(User) private userRepository: Repository<User> ) {}
 
   create(createUserInput: CreateUserInput) {
-    return this.userRepository.create(createUserInput);
+    const user = this.userRepository.create(createUserInput);
+    return this.userRepository.save(user);
   }
 
   findAll() {
@@ -22,8 +23,27 @@ export class UsersService {
     return this.userRepository.findOneByOrFail({id});
   }
 
-  update(id: number, updateUserInput: UpdateUserInput) {
-    return this.userRepository.update({id}, {...updateUserInput});
+  async update(id: number, updateUserInput: UpdateUserInput) {
+
+    const { username } = updateUserInput;
+    if (username) {
+      const existingUser = this.userRepository.findOneBy({username})
+      if (existingUser) {
+        throw new HttpException(
+          `Username: ${username} already exists. Cannot update.`,
+          HttpStatus.BAD_REQUEST
+        );
+      }
+    }
+
+    const updateResult = await this.userRepository.update(id, updateUserInput);
+    if ( updateResult.affected === 0 ) {
+      throw new HttpException(
+        `Thete is no user with id: ${id}. Cannot update.`,
+        HttpStatus.BAD_REQUEST
+      );
+    }
+    return this.userRepository.findOneByOrFail({id});
   }
 
   remove(id: number) {
