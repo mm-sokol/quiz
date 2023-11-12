@@ -7,6 +7,7 @@ import { join } from 'lodash';
 import { ApolloDriver } from '@nestjs/apollo';
 import { UsersModule } from './users/users.module';
 import { User } from './users/entities/user.entity';
+import { QuizesModule } from './quizes/quizes.module';
 
 
 @Module({
@@ -35,7 +36,9 @@ import { User } from './users/entities/user.entity';
 
     }),
 
-    UsersModule
+    UsersModule,
+
+    QuizesModule
   ],
   controllers: [AppController],
   providers: [AppService],
