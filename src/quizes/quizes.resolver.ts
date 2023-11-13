@@ -1,16 +1,16 @@
 import { Resolver, Query, Mutation, Args, Int } from '@nestjs/graphql';
 import { QuizesService } from './quizes.service';
 import { Quiz } from './entities/quiz.entity';
-import { CreateQuizeInput } from './dto/create-quiz.input';
-import { UpdateQuizeInput } from './dto/update-quiz.input';
+import { CreateQuizInput } from './dto/create-quiz.input';
+import { UpdateQuizInput } from './dto/update-quiz.input';
 
 @Resolver(() => Quiz)
 export class QuizesResolver {
   constructor(private readonly quizesService: QuizesService) {}
 
   @Mutation(() => Quiz)
-  createQuize(@Args('createQuizeInput') createQuizeInput: CreateQuizeInput) {
-    return this.quizesService.create(createQuizeInput);
+  createQuiz(@Args('createQuizInput') createQuizInput: CreateQuizInput) {
+    return this.quizesService.create(createQuizInput);
   }
 
   @Query(() => [Quiz], { name: 'quizes' })
@@ -24,12 +24,15 @@ export class QuizesResolver {
   }
 
   @Mutation(() => Quiz)
-  updateQuize(@Args('updateQuizeInput') updateQuizeInput: UpdateQuizeInput) {
-    return this.quizesService.update(updateQuizeInput.id, updateQuizeInput);
+  updateQuiz(
+    @Args({name: 'id', type: () => Int}) id: number,
+    @Args({name: 'UpdateQuizInput'}) UpdateQuizInput: UpdateQuizInput
+    ) {
+    return this.quizesService.update(id, UpdateQuizInput);
   }
 
   @Mutation(() => Quiz)
-  removeQuize(@Args('id', { type: () => Int }) id: number) {
+  removeQuiz(@Args('id', { type: () => Int }) id: number) {
     return this.quizesService.remove(id);
   }
 }
