@@ -31,7 +31,7 @@ export class UsersResolver {
   }
 
   @Mutation(() => User)
-  removeUser(@Args('id', { type: () => Int }) id: number) {
+  removeUser(@Args('id', { type: () => Int }) id: number): Promise<User> {
     return this.usersService.remove(id);
   }
 }

@@ -46,7 +46,14 @@ export class UsersService {
     return this.userRepository.findOneByOrFail({id});
   }
 
-  remove(id: number) {
-    return this.userRepository.delete({id});
+  async remove(id: number) {
+    const user = await this.userRepository.findOneBy({id});
+    if (!user) {
+      throw new HttpException(
+        `Thete is no user with id: ${id}. Cannot delete.`,
+        HttpStatus.BAD_REQUEST
+      );
+    }
+    return this.userRepository.remove(user);
   }
 }
