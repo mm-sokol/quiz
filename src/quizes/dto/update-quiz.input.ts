@@ -1,8 +1,8 @@
-import { CreateQuizeInput } from './create-quiz.input';
+import { CreateQuizInput } from './create-quiz.input';
 import { InputType, Field, Int, PartialType } from '@nestjs/graphql';
 
 @InputType()
-export class UpdateQuizeInput extends PartialType(CreateQuizeInput) {
-  @Field(() => Int)
-  id: number;
+export class UpdateQuizInput extends PartialType(CreateQuizInput) {
+  @Field()
+  title: string;
 }
