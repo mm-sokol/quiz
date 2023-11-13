@@ -4,31 +4,31 @@ import { Quiz } from './entities/quiz.entity';
 import { CreateQuizeInput } from './dto/create-quiz.input';
 import { UpdateQuizeInput } from './dto/update-quiz.input';
 
-@Resolver(() => Quize)
+@Resolver(() => Quiz)
 export class QuizesResolver {
   constructor(private readonly quizesService: QuizesService) {}
 
-  @Mutation(() => Quize)
+  @Mutation(() => Quiz)
   createQuize(@Args('createQuizeInput') createQuizeInput: CreateQuizeInput) {
     return this.quizesService.create(createQuizeInput);
   }
 
-  @Query(() => [Quize], { name: 'quizes' })
+  @Query(() => [Quiz], { name: 'quizes' })
   findAll() {
     return this.quizesService.findAll();
   }
 
-  @Query(() => Quize, { name: 'quize' })
+  @Query(() => Quiz, { name: 'quize' })
   findOne(@Args('id', { type: () => Int }) id: number) {
     return this.quizesService.findOne(id);
   }
 
-  @Mutation(() => Quize)
+  @Mutation(() => Quiz)
   updateQuize(@Args('updateQuizeInput') updateQuizeInput: UpdateQuizeInput) {
     return this.quizesService.update(updateQuizeInput.id, updateQuizeInput);
   }
 
-  @Mutation(() => Quize)
+  @Mutation(() => Quiz)
   removeQuize(@Args('id', { type: () => Int }) id: number) {
     return this.quizesService.remove(id);
   }
