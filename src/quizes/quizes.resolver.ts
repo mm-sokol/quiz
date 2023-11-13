@@ -18,7 +18,7 @@ export class QuizesResolver {
     return this.quizesService.findAll();
   }
 
-  @Query(() => Quiz, { name: 'quize' })
+  @Query(() => Quiz, { name: 'quiz' })
   findOne(@Args('id', { type: () => Int }) id: number) {
     return this.quizesService.findOne(id);
   }
