@@ -25,7 +25,7 @@ export class UsersService {
     }
     catch (error) {
       throw new HttpException(
-        `Invalid request for user id: ${id}.`,
+        `Invalid request for user of id: ${id}.`,
         HttpStatus.BAD_REQUEST
       );
     }
