@@ -17,7 +17,6 @@ describe('UsersService', () => {
     expect(service).toBeDefined();
   });
 
-
   it('should create a new user record and return that', async () => {
     const userInput = {
       username: 'rob_ot',

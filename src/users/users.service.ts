@@ -19,8 +19,16 @@ export class UsersService {
     return this.userRepository.find();
   }
 
-  findOne(id: number) {
-    return this.userRepository.findOneByOrFail({id});
+  async findOne(id: number) {
+    try {
+      const user = await this.userRepository.findOneByOrFail({id});
+    }
+    catch (error) {
+      throw new HttpException(
+        `Invalid request for user id: ${id}.`,
+        HttpStatus.BAD_REQUEST
+      );
+    }
   }
 
   async update(id: number, updateUserInput: UpdateUserInput) {
