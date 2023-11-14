@@ -6,10 +6,14 @@ import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 export class Quiz {
 
   @PrimaryGeneratedColumn()
-  @Field(() => ID)
+  @Field((type) => ID)
   id: number;
 
   @Column()
   @Field()
   title: string;
+
+  // @ManyToOne(() => User, (user) => user.quizes)
+  // @Field((type) => User)
+  // author: User;
 }

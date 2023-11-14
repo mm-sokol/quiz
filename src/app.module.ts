@@ -8,6 +8,7 @@ import { ApolloDriver } from '@nestjs/apollo';
 import { UsersModule } from './users/users.module';
 import { User } from './users/entities/user.entity';
 import { QuizesModule } from './quizes/quizes.module';
+import { Quiz } from './quizes/entities/quiz.entity';
 
 
 @Module({
@@ -20,7 +21,7 @@ import { QuizesModule } from './quizes/quizes.module';
       password: 'quizdbpass',
       database: 'quizdb',
       entities: [
-        User
+        User, Quiz
         // 'src/**/entities/*.entity.ts'
         // __dirname + '/**/*.entity.ts'
       ],
@@ -37,7 +38,6 @@ import { QuizesModule } from './quizes/quizes.module';
     }),
 
     UsersModule,
-
     QuizesModule
   ],
   controllers: [AppController],
