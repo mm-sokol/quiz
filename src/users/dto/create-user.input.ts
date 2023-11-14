@@ -1,5 +1,6 @@
-import { InputType, Int, Field } from '@nestjs/graphql';
+import { InputType, Field } from '@nestjs/graphql';
 import { IsAlpha } from 'class-validator';
+import { UserRole } from '../entities/user.entity';
 
 @InputType()
 export class CreateUserInput {
@@ -13,4 +14,10 @@ export class CreateUserInput {
   @IsAlpha()
   @Field()
   lastname: string;
+
+  @Field(
+    (type) => UserRole,
+    {nullable: true, defaultValue: UserRole.STUDENT}
+  )
+  role: UserRole;
 }

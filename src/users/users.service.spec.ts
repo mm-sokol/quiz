@@ -1,5 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { UsersService } from './users.service';
+import { UserRole } from './entities/user.entity';
 
 describe('UsersService', () => {
   let service: UsersService;
@@ -21,7 +22,8 @@ describe('UsersService', () => {
     const userInput = {
       username: 'rob_ot',
       firstname: 'Robert',
-      lastname: 'Otto'
+      lastname: 'Otto',
+      role: UserRole.STUDENT
     };
     expect(await service.create(userInput)).toEqual({
       id: expect.any(Number),
