@@ -8,6 +8,8 @@ import { UsersModule } from './users/users.module';
 import { User } from './users/entities/user.entity';
 import { QuizesModule } from './quizes/quizes.module';
 import { Quiz } from './quizes/entities/quiz.entity';
+import { QuestionsModule } from './questions/questions.module';
+import { Question } from './questions/entities/question.entity';
 
 
 @Module({
@@ -20,7 +22,7 @@ import { Quiz } from './quizes/entities/quiz.entity';
       password: 'quizdbpass',
       database: 'quizdb',
       entities: [
-        User, Quiz
+        User, Quiz, Question
         // 'src/**/entities/*.entity.ts'
         // __dirname + '/**/*.entity.ts'
       ],
@@ -37,7 +39,8 @@ import { Quiz } from './quizes/entities/quiz.entity';
     }),
 
     UsersModule,
-    QuizesModule
+    QuizesModule,
+    QuestionsModule
   ],
   controllers: [AppController],
   providers: [AppService],
