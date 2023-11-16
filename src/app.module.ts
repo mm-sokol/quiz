@@ -12,6 +12,7 @@ import { QuestionsModule } from './questions/questions.module';
 import { Question } from './questions/entities/question.entity';
 import { AnswersModule } from './answers/answers.module';
 import { Answer } from './answers/entities/answer.entity';
+import { DataSourceProvider } from './db/data-source.provider';
 
 
 @Module({
@@ -46,6 +47,6 @@ import { Answer } from './answers/entities/answer.entity';
     AnswersModule
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService, DataSourceProvider],
 })
 export class AppModule {}
