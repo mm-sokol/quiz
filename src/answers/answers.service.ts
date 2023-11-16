@@ -1,20 +1,17 @@
-import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
-import { CreateAnswerFullInput, CreateAnswerInput } from './dto/create-answer.input';
-import { UpdateAnswerFullInput, UpdateAnswerInput } from './dto/update-answer.input';
+import { Inject, Injectable, NotFoundException } from '@nestjs/common';
+import { CreateAnswerFullInput } from './dto/create-answer.input';
+import { UpdateAnswerFullInput } from './dto/update-answer.input';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Answer } from './entities/answer.entity';
-import { DataSource, EntityNotFoundError, Repository } from 'typeorm';
-import { AppDataSource } from '../db/data-source'
+import { DataSource, Repository } from 'typeorm';
 
 @Injectable()
 export class AnswersService {
 
   constructor(
     @InjectRepository(Answer) private readonly answersRepository: Repository<Answer>,
-    private readonly dataSource: DataSource,
-  ) {
-    dataSource = AppDataSource;
-  }
+    @Inject('DataSourceProvider') private readonly dataSource: DataSource
+  ) {}
 
   async create(createAnswerInput: CreateAnswerFullInput) {
     const queryRunner = this.dataSource.createQueryRunner();
