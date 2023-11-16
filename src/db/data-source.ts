@@ -1,0 +1,28 @@
+import { join } from "path"
+import { Answer } from "src/answers/entities/answer.entity"
+import { Question } from "src/questions/entities/question.entity"
+import { Quiz } from "src/quizes/entities/quiz.entity"
+import { User } from "src/users/entities/user.entity"
+import { DataSource } from "typeorm"
+
+export const AppDataSource = new DataSource({
+    type: "postgres",
+    host: "localhost",
+    port: 54033,
+    username: "quizuser",
+    password: "quizdbpass",
+    database: "quizdb",
+    synchronize: true,
+    entities: [
+        User, Quiz, Question, Answer,
+      ],
+    migrations: [join(process.cwd(), 'src/**/migrations/*.{ts, js}') ],
+})
+
+AppDataSource.initialize()
+    .then(() => {
+        console.log("Data Source has been initialized!")
+    })
+    .catch((error) => {
+        console.error("Error during Data Source initialization", error)
+    })

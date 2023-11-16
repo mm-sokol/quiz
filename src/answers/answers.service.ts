@@ -1,26 +1,90 @@
-import { Injectable } from '@nestjs/common';
-import { CreateAnswerInput } from './dto/create-answer.input';
-import { UpdateAnswerInput } from './dto/update-answer.input';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
+import { CreateAnswerFullInput, CreateAnswerInput } from './dto/create-answer.input';
+import { UpdateAnswerFullInput, UpdateAnswerInput } from './dto/update-answer.input';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Answer } from './entities/answer.entity';
+import { DataSource, EntityNotFoundError, Repository } from 'typeorm';
+import { AppDataSource } from '../db/data-source'
 
 @Injectable()
 export class AnswersService {
-  create(createAnswerInput: CreateAnswerInput) {
-    return 'This action adds a new answer';
+
+  constructor(
+    @InjectRepository(Answer) private readonly answersRepository: Repository<Answer>,
+    private readonly dataSource: DataSource,
+  ) {
+    dataSource = AppDataSource;
+  }
+
+  async create(createAnswerInput: CreateAnswerFullInput) {
+    const queryRunner = this.dataSource.createQueryRunner();
+    const answerRepository = queryRunner.manager.getRepository(Answer);
+    await queryRunner.startTransaction();
+    try {
+      const answer = answerRepository.create(createAnswerInput);
+      let saved = answerRepository.save(answer);
+
+      await queryRunner.commitTransaction();
+      return saved;
+    } catch(error) {
+      await queryRunner.rollbackTransaction();
+      throw error;
+    } finally {
+      await queryRunner.release();
+    }
   }
 
   findAll() {
-    return `This action returns all answers`;
+    return this.answersRepository.find({relations: ['question']});
   }
 
   findOne(id: number) {
-    return `This action returns a #${id} answer`;
+    const answer = this.answersRepository.findOne({where: {id}, relations: ['question']});
+    if (!answer) {
+      throw new NotFoundException(`Answer of id: ${id} not found.`);
+    }
+    return answer;
   }
 
-  update(id: number, updateAnswerInput: UpdateAnswerInput) {
-    return `This action updates a #${id} answer`;
+  async update(id: number, updateAnswerInput: UpdateAnswerFullInput) {
+    const queryRunner = this.dataSource.createQueryRunner();
+    const answerRepository = queryRunner.manager.getRepository(Answer);
+    await queryRunner.startTransaction();
+    try {
+      const updated = await answerRepository.update(id, updateAnswerInput);
+      if (updated.affected === 0) {
+        throw new NotFoundException(`Answer with id: ${id} not found. Cannot update.`);
+      }
+      const answer = answerRepository.findOneBy({id});
+
+      await queryRunner.commitTransaction();
+      return answer;
+    } catch(error) {
+      await queryRunner.rollbackTransaction();
+      throw error;
+    } finally {
+      await queryRunner.release();
+    }
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} answer`;
+  async remove(id: number) {
+    const queryRunner = this.dataSource.createQueryRunner();
+    const answerRepository = queryRunner.manager.getRepository(Answer);
+
+    await queryRunner.startTransaction();
+    try {
+      const toRemove = await answerRepository.findOneBy({id});
+      if(!toRemove) {
+        throw new NotFoundException(`Answer with id: ${id} not found.`);
+      }
+      const removed = answerRepository.remove(toRemove);
+      await queryRunner.commitTransaction();
+      return removed;
+    } catch (error) {
+      await queryRunner.rollbackTransaction();
+      throw error;
+    } finally {
+      await queryRunner.release();
+    }
   }
 }
