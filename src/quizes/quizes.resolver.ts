@@ -1,16 +1,21 @@
-import { Resolver, Query, Mutation, Args, Int } from '@nestjs/graphql';
+import { Resolver, Query, Mutation, Args, Int, ResolveProperty, Parent } from '@nestjs/graphql';
 import { QuizesService } from './quizes.service';
 import { Quiz } from './entities/quiz.entity';
 import { CreateQuizInput } from './dto/create-quiz.input';
 import { UpdateQuizInput } from './dto/update-quiz.input';
+import { CreateQuestionInput } from 'src/questions/dto/create-question.input';
+import { QuestionsService } from 'src/questions/questions.service';
 
 @Resolver(() => Quiz)
 export class QuizesResolver {
-  constructor(private readonly quizesService: QuizesService) {}
+  constructor(private readonly quizesService: QuizesService,
+    private readonly questionsService: QuestionsService) {}
 
   @Mutation(() => Quiz)
-  createQuiz(@Args('createQuizInput') createQuizInput: CreateQuizInput) {
-    return this.quizesService.create(createQuizInput);
+  createQuiz(
+    @Args('createQuizInput') createQuizInput: CreateQuizInput, 
+    @Args('createQuestionArray', {type: () => [CreateQuestionInput]}) createQuestionArray : CreateQuestionInput[]): Promise<Quiz> {
+    return this.quizesService.create(createQuizInput, createQuestionArray);
   }
 
   @Query(() => [Quiz], { name: 'quizes' })
@@ -19,7 +24,7 @@ export class QuizesResolver {
   }
 
   @Query(() => Quiz, { name: 'quiz' })
-  findOne(@Args('id', { type: () => Int }) id: number) {
+  findOne(@Args('id', { type: () => Int }) id: number): Promise<Quiz> {
     return this.quizesService.findOne(id);
   }
 
@@ -35,4 +40,10 @@ export class QuizesResolver {
   removeQuiz(@Args('id', { type: () => Int }) id: number) {
     return this.quizesService.remove(id);
   }
+
+  // @ResolveProperty('questions')
+  // async getQuestions(@Parent() quiz: Quiz) {
+  //   const { id } = quiz;
+  //   return this.questionsService.findQuizQuestions(id);
+  // }
 }
