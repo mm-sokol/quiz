@@ -5,4 +5,5 @@ export class CreateQuizInput {
   
   @Field({description: 'Title of the quiz'})
   title: string;
+
 }
