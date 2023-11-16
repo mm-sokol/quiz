@@ -1,5 +1,6 @@
-import { ObjectType, Field, ID, registerEnumType } from '@nestjs/graphql';
-import { Column, PrimaryGeneratedColumn } from 'typeorm';
+import { ObjectType, Field, ID, registerEnumType, Int } from '@nestjs/graphql';
+import { Quiz } from 'src/quizes/entities/quiz.entity';
+import { Column, Entity, ManyToMany, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 
 export enum QuestionType {
   SINGLE_CHOICE = 0,
@@ -14,6 +15,7 @@ registerEnumType(QuestionType, {
 
 
 @ObjectType()
+@Entity('questions')
 export class Question {
 
   @PrimaryGeneratedColumn()
@@ -30,5 +32,12 @@ export class Question {
   })
   @Field(() => QuestionType)
   type: QuestionType;
+
+  @Column({nullable: true, default: null})
+  @Field((type) => Int, {nullable: true, defaultValue: null})
+  quizId?: number; 
+
+  @ManyToOne(() => Quiz, (quiz) => quiz.questions)
+  quiz: Quiz;
 
 }
