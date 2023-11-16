@@ -1,6 +1,7 @@
 import { ObjectType, Field, ID, registerEnumType, Int } from '@nestjs/graphql';
+import { Answer } from 'src/answers/entities/answer.entity';
 import { Quiz } from 'src/quizes/entities/quiz.entity';
-import { Column, Entity, ManyToMany, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, ManyToMany, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 
 export enum QuestionType {
   SINGLE_CHOICE = 0,
@@ -39,5 +40,9 @@ export class Question {
 
   @ManyToOne(() => Quiz, (quiz) => quiz.questions)
   quiz: Quiz;
+
+  @OneToMany(() => Answer, (answer) => answer.question)
+  @Field(type => [Answer])
+  answers: Answer[];
 
 }
