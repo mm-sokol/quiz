@@ -2,7 +2,7 @@ import { Resolver, Query, Mutation, Args, Int, ID, ResolveProperty, Parent } fro
 import { QuestionsService } from './questions.service';
 import { Question } from './entities/question.entity';
 import { CreateQuestionInput } from './dto/create-question.input';
-import { UpdateQuestionFullInput, UpdateQuestionInput } from './dto/update-question.input';
+import { UpdateQuestionFullInput } from './dto/update-question.input';
 import { Quiz } from 'src/quizes/entities/quiz.entity';
 
 @Resolver(() => Question)
