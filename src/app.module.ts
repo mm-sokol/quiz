@@ -11,6 +11,7 @@ import { Quiz } from './quizes/entities/quiz.entity';
 import { QuestionsModule } from './questions/questions.module';
 import { Question } from './questions/entities/question.entity';
 import { AnswersModule } from './answers/answers.module';
+import { Answer } from './answers/entities/answer.entity';
 
 
 @Module({
@@ -23,7 +24,7 @@ import { AnswersModule } from './answers/answers.module';
       password: 'quizdbpass',
       database: 'quizdb',
       entities: [
-        User, Quiz, Question
+        User, Quiz, Question, Answer,
         // 'src/**/entities/*.entity.ts'
         // __dirname + '/**/*.entity.ts'
       ],
