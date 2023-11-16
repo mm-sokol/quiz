@@ -31,7 +31,7 @@ import { Question } from './questions/entities/question.entity';
 
     GraphQLModule.forRoot({
       driver: ApolloDriver,
-      autoSchemaFile: true,
+      autoSchemaFile: [process.cwd() + 'src/schema.graphql'],
       debug: true,
       playground: true,
       typePaths: ['./**/*.graphql'],
