@@ -1,23 +1,51 @@
-import { BadRequestException, HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { BadRequestException, HttpException, HttpStatus, Inject, Injectable } from '@nestjs/common';
 import { CreateQuestionFullInput, CreateQuestionInput } from './dto/create-question.input';
 import { UpdateQuestionFullInput, UpdateQuestionInput } from './dto/update-question.input';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Question } from './entities/question.entity';
-import { Repository } from 'typeorm';
+import { DataSource, Repository } from 'typeorm';
 import { Quiz } from 'src/quizes/entities/quiz.entity';
+import { CreateAnswerFullInput, CreateAnswerInput } from 'src/answers/dto/create-answer.input';
+import { Answer } from 'src/answers/entities/answer.entity';
 
 @Injectable()
 export class QuestionsService {
 
-  constructor(@InjectRepository(Question) private questionRepository: Repository<Question>) {}
+  constructor(
+    @InjectRepository(Question) private questionRepository: Repository<Question>,
+    @Inject('DataSourceProvider') private readonly dataSource: DataSource) {}
 
-  create(createQuestionInput: CreateQuestionInput, quizId: number) {
-    const questionIput: CreateQuestionFullInput = {
-      ...createQuestionInput, 
-      quizId: quizId };
+  async create(
+    createQuestionInput: CreateQuestionFullInput, 
+    answersInput: CreateAnswerInput[]) {
 
-    const question = this.questionRepository.create(questionIput);
-    return this.questionRepository.save(question);
+    const queryRunner = this.dataSource.createQueryRunner();
+    const questionRepository  = queryRunner.manager.getRepository(Question);
+    const answerRepository = queryRunner.manager.getRepository(Answer);
+
+    await queryRunner.startTransaction();
+    try {
+      const question = questionRepository.create(createQuestionInput);
+      const saved = await questionRepository.save(question);
+
+      const answers = answersInput.map(answerInput => {
+        const answerFullInput: CreateAnswerFullInput = {
+          ...answerInput, questionId: saved.id
+        };
+        const answer = answerRepository.create(answerFullInput);
+        return answer;
+      });
+      const resolvedAnswers = await Promise.all(answers);
+      await answerRepository.save(resolvedAnswers);
+      return saved;
+    }
+    catch (error) {
+      await queryRunner.rollbackTransaction();
+      throw error;
+    }
+    finally {
+      await queryRunner.release();
+    }
   }
 
   findAll() {

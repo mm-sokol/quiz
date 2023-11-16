@@ -1,9 +1,10 @@
 import { Resolver, Query, Mutation, Args, Int, ID, ResolveProperty, Parent } from '@nestjs/graphql';
 import { QuestionsService } from './questions.service';
 import { Question } from './entities/question.entity';
-import { CreateQuestionInput } from './dto/create-question.input';
+import { CreateQuestionFullInput, CreateQuestionInput } from './dto/create-question.input';
 import { UpdateQuestionFullInput } from './dto/update-question.input';
 import { Quiz } from 'src/quizes/entities/quiz.entity';
+import { CreateAnswerInput } from 'src/answers/dto/create-answer.input';
 
 @Resolver(() => Question)
 export class QuestionsResolver {
@@ -11,9 +12,9 @@ export class QuestionsResolver {
 
   @Mutation(() => Question)
   createQuestion(
-    @Args({name: 'quizId', type: () => ID}) quizId: number,
-    @Args('createQuestionInput') createQuestionInput: CreateQuestionInput) {
-    return this.questionsService.create(createQuestionInput, quizId);
+    @Args('createQuestionFullInput') createQuestionInput: CreateQuestionFullInput,
+    @Args('answersInputArray') answersInput: CreateAnswerInput[]) {
+    return this.questionsService.create(createQuestionInput, answersInput);
   }
 
   @Query(() => [Question], { name: 'questions' })
