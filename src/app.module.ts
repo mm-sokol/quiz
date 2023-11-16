@@ -10,6 +10,7 @@ import { QuizesModule } from './quizes/quizes.module';
 import { Quiz } from './quizes/entities/quiz.entity';
 import { QuestionsModule } from './questions/questions.module';
 import { Question } from './questions/entities/question.entity';
+import { AnswersModule } from './answers/answers.module';
 
 
 @Module({
@@ -40,7 +41,8 @@ import { Question } from './questions/entities/question.entity';
 
     UsersModule,
     QuizesModule,
-    QuestionsModule
+    QuestionsModule,
+    AnswersModule
   ],
   controllers: [AppController],
   providers: [AppService],
