@@ -1,43 +1,41 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
-import { CreateQuestionInput } from './dto/create-question.input';
-import { UpdateQuestionInput } from './dto/update-question.input';
+import { BadRequestException, HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { CreateQuestionFullInput, CreateQuestionInput } from './dto/create-question.input';
+import { UpdateQuestionFullInput, UpdateQuestionInput } from './dto/update-question.input';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Question } from './entities/question.entity';
 import { Repository } from 'typeorm';
+import { Quiz } from 'src/quizes/entities/quiz.entity';
 
 @Injectable()
 export class QuestionsService {
 
   constructor(@InjectRepository(Question) private questionRepository: Repository<Question>) {}
 
-  create(createQuestionInput: CreateQuestionInput) {
-    const question = this.questionRepository.create(createQuestionInput);
+  create(createQuestionInput: CreateQuestionInput, quizId: number) {
+    const questionIput: CreateQuestionFullInput = {
+      ...createQuestionInput, 
+      quizId: quizId };
+
+    const question = this.questionRepository.create(questionIput);
     return this.questionRepository.save(question);
   }
 
   findAll() {
-    return this.questionRepository.find();
+    return this.questionRepository.find({relations: ['quiz']});
   }
 
   async findOne(id: number) {
-    try {
-      const question = await this.questionRepository.findOneByOrFail({id});
-    }
-    catch (error) {
-      throw new HttpException(
-        `Invalid request for question of id: ${id}.`,
-        HttpStatus.BAD_REQUEST
-      );
-    }  
+    const question = await this.questionRepository.findOne({relations: ['quiz'], where: {id}});
+    if (!question) {
+      throw new BadRequestException(`Failed search for question of id: ${id}`);
+    } 
+    return question;
   }
 
-  async update(id: number, updateQuestionInput: UpdateQuestionInput) {
+  async update(id: number, updateQuestionInput: UpdateQuestionFullInput) {
     const updatedQuestion = await this.questionRepository.update(id, updateQuestionInput);
     if ( updatedQuestion.affected === 0 ) {
-      throw new HttpException(
-        `Thete is no question with id: ${id}. Cannot update.`,
-        HttpStatus.BAD_REQUEST
-      );
+      throw new BadRequestException(`Thete is no question with id: ${id}. Cannot update.`);
     }
     return this.questionRepository.findOneByOrFail({id});
   }
