@@ -3,10 +3,6 @@ import { Min } from 'class-validator';
 
 @InputType()
 export class CreateAnswerInput {
-
-  @Field(() => ID)
-  id: number;
-
   @Field()
   contents: string;
 
@@ -17,10 +13,6 @@ export class CreateAnswerInput {
 
 @InputType()
 export class CreateAnswerFullInput {
-
-  @Field(() => ID)
-  id: number;
-
   @Field()
   contents: string;
 
