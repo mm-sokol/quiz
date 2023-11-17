@@ -13,7 +13,7 @@ export class QuestionsResolver {
   @Mutation(() => Question)
   createQuestion(
     @Args('createQuestionFullInput') createQuestionInput: CreateQuestionFullInput,
-    @Args('answersInputArray') answersInput: CreateAnswerInput[]) {
+    @Args('answersInputArray',  {type: () => [CreateAnswerInput]}) answersInput: CreateAnswerInput[]) {
     return this.questionsService.create(createQuestionInput, answersInput);
   }
 

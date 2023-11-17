@@ -3,10 +3,11 @@ import { CreateQuestionFullInput, CreateQuestionInput } from './dto/create-quest
 import { UpdateQuestionFullInput, UpdateQuestionInput } from './dto/update-question.input';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Question } from './entities/question.entity';
-import { DataSource, Repository } from 'typeorm';
+import { DataSource, Repository, getManager } from 'typeorm';
 import { Quiz } from 'src/quizes/entities/quiz.entity';
 import { CreateAnswerFullInput, CreateAnswerInput } from 'src/answers/dto/create-answer.input';
 import { Answer } from 'src/answers/entities/answer.entity';
+import { NotFoundError } from 'rxjs';
 
 @Injectable()
 export class QuestionsService {
@@ -19,41 +20,47 @@ export class QuestionsService {
     createQuestionInput: CreateQuestionFullInput, 
     answersInput: CreateAnswerInput[]) {
 
-    const queryRunner = this.dataSource.createQueryRunner();
-    const questionRepository  = queryRunner.manager.getRepository(Question);
-    const answerRepository = queryRunner.manager.getRepository(Answer);
+    const manager = this.dataSource.manager;
 
-    await queryRunner.startTransaction();
-    try {
-      const question = questionRepository.create(createQuestionInput);
-      const saved = await questionRepository.save(question);
+    const newId = await manager.transaction(async manager => {
+      try {
+        const question = this.questionRepository.create(createQuestionInput);
+        const savedQuestion = await manager.save(Question, question);
 
-      const answers = answersInput.map(answerInput => {
-        const answerFullInput: CreateAnswerFullInput = {
-          ...answerInput, questionId: saved.id
-        };
-        const answer = answerRepository.create(answerFullInput);
-        return answer;
-      });
-      const resolvedAnswers = await Promise.all(answers);
-      await answerRepository.save(resolvedAnswers);
-      return saved;
+        const answers = answersInput.map(answerInput => {
+          const answerFullInput: CreateAnswerFullInput = {
+            ...answerInput, questionId: savedQuestion.id
+          };
+
+          const answer = manager.create(Answer, answerFullInput);
+          return answer;
+        });
+        const resolvedAnswers = await Promise.all(answers);
+        const savedAnswers = await manager.save(Answer, resolvedAnswers);
+
+        const count = await manager.count(Answer, {where: {questionId: savedQuestion.id}});
+        if (count === 0) {
+          throw new BadRequestException(`Failed to create answers`);
+        }
+        return savedQuestion.id;
+      }
+      catch (error) {
+        throw new BadRequestException(`Transaction failed: `+error.message);
+      }
+    });
+    const newQuestion = await manager.findOne(Question, {relations: ['answers'], where: {id: newId}});
+    if (!newQuestion) {
+      throw new BadRequestException(`Failed to create quetion`);
     }
-    catch (error) {
-      await queryRunner.rollbackTransaction();
-      throw error;
-    }
-    finally {
-      await queryRunner.release();
-    }
+    return newQuestion;  
   }
 
   findAll() {
-    return this.questionRepository.find({relations: ['quiz']});
+    return this.questionRepository.find({relations: ['quiz', 'answers']});
   }
 
   async findOne(id: number) {
-    const question = await this.questionRepository.findOne({relations: ['quiz'], where: {id}});
+    const question = await this.questionRepository.findOne({relations: ['quiz', 'answers'], where: {id}});
     if (!question) {
       throw new BadRequestException(`Failed search for question of id: ${id}`);
     } 
