@@ -13,6 +13,7 @@ import { Question } from './questions/entities/question.entity';
 import { AnswersModule } from './answers/answers.module';
 import { Answer } from './answers/entities/answer.entity';
 import { DataSourceProvider } from './db/data-source.provider';
+import { AttemptsModule } from './attempts/attempts.module';
 
 
 @Module({
@@ -44,7 +45,8 @@ import { DataSourceProvider } from './db/data-source.provider';
     UsersModule,
     QuizesModule,
     QuestionsModule,
-    AnswersModule
+    AnswersModule,
+    AttemptsModule
   ],
   controllers: [AppController],
   providers: [AppService, DataSourceProvider],
