@@ -22,8 +22,13 @@ export class QuestionsResolver {
     return this.questionsService.findAll();
   }
 
+  @Query(() => [Question], { name: 'quizQuestions' })
+  findQuizQuestions(@Args('quizId', {type: () => Int}) quizId: number) {
+    return this.questionsService.findQuizQuestions(quizId);
+  }
+
   @Query(() => Question, { name: 'question' })
-  findOne(@Args('id', { type: () => Int }) id: number) {
+  findOne(@Args('id', {type: () => Int}) id: number) {
     return this.questionsService.findOne(id);
   }
 
@@ -34,13 +39,13 @@ export class QuestionsResolver {
 
   @Mutation(() => Question)
   updateQuestion(
-    @Args({name: 'id', type: () => Int}) id: number,
+    @Args('id', {type: () => Int}) id: number,
     @Args('updateQuestionFullInput') updateQuestionInput: UpdateQuestionFullInput) {
     return this.questionsService.update(id, updateQuestionInput);
   }
 
   @Mutation(() => Question)
-  removeQuestion(@Args('id', { type: () => Int }) id: number) {
+  removeQuestion(@Args('id', {type: () => Int}) id: number) {
     return this.questionsService.remove(id);
   }
 }

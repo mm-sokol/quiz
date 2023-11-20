@@ -59,6 +59,10 @@ export class QuestionsService {
     return this.questionRepository.find({relations: ['quiz', 'answers']});
   }
 
+  findQuizQuestions(quizId: number) {
+    return this.questionRepository.find({where: {quizId: quizId}, relations: ['answers']});
+  }
+
   async findOne(id: number) {
     const question = await this.questionRepository.findOne({relations: ['quiz', 'answers'], where: {id}});
     if (!question) {
