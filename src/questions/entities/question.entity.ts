@@ -42,7 +42,7 @@ export class Question {
   quiz: Quiz;
 
   @OneToMany(() => Answer, (answer) => answer.question)
-  @Field(type => [Answer])
+  @Field(type => [Answer], {nullable: true, defaultValue: []})
   answers: Answer[];
 
 }
