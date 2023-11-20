@@ -13,7 +13,7 @@ export class AnswersService {
     @Inject('DataSourceProvider') private readonly dataSource: DataSource
   ) {}
 
-  async create(createAnswerInput: CreateAnswerFullInput) {
+  async createTransaction(createAnswerInput: CreateAnswerFullInput) {
     const queryRunner = this.dataSource.createQueryRunner();
     const answerRepository = queryRunner.manager.getRepository(Answer);
     await queryRunner.startTransaction();
@@ -29,6 +29,10 @@ export class AnswersService {
     } finally {
       await queryRunner.release();
     }
+  }
+
+  create(createAnswerInput: CreateAnswerFullInput) {
+    return this.answersRepository.create(createAnswerInput);
   }
 
   findAll() {

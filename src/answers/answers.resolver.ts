@@ -13,7 +13,7 @@ export class AnswersResolver {
   createAnswer(
     @Args('questionId', {type: () => ID}) questionId: number,
     @Args('createAnswerInput') createAnswerInput: CreateAnswerFullInput) {
-    return this.answersService.create(createAnswerInput);
+    return this.answersService.createTransaction(createAnswerInput);
   }
 
   @Query(() => [Answer], { name: 'answers' })
