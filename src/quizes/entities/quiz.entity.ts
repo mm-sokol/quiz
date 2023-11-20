@@ -15,6 +15,6 @@ export class Quiz {
   title: string;
 
   @OneToMany(() => Question, (question) => question.quiz)
-  @Field(type => [Question])
+  @Field(type => [Question], {nullable: true, defaultValue: []})
   questions: Question[];
 }
