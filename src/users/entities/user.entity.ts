@@ -1,4 +1,5 @@
 import { ObjectType, Field, ID, registerEnumType } from '@nestjs/graphql';
+import { QuizAttempt } from 'src/attempts/entities/quiz-attempt.entity';
 import { Quiz } from 'src/quizes/entities/quiz.entity';
 import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 
@@ -41,8 +42,8 @@ export class User {
     defaultValue: UserRole.STUDENT})
   role: UserRole;
 
-  // @OneToMany(() => Quiz, (quiz) => quiz.author)
-  // @Field(() => [Quiz], {nullable: true, defaultValue: null})
-  // quizes: Quiz[]
+  @OneToMany(() => QuizAttempt, (attempt) => attempt.user)
+  @Field(() => [QuizAttempt], {nullable: true, defaultValue: null})
+  quizAttempts: QuizAttempt[]
 
 }

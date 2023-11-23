@@ -1,5 +1,6 @@
 import { ObjectType, Field, ID, registerEnumType, Int } from '@nestjs/graphql';
 import { Answer } from 'src/answers/entities/answer.entity';
+import { AnswerAttempt } from 'src/attempts/entities/answer-attempt.entity';
 import { Quiz } from 'src/quizes/entities/quiz.entity';
 import { Column, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 
@@ -44,5 +45,9 @@ export class Question {
   @OneToMany(() => Answer, (answer) => answer.question)
   @Field(type => [Answer], {nullable: true, defaultValue: []})
   answers: Answer[];
+
+  @OneToMany(() => AnswerAttempt, (attempt) => attempt.question)
+  @Field(type => [AnswerAttempt], {nullable: true, defaultValue: []})
+  solvingAttempts: AnswerAttempt[];
 
 }

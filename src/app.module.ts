@@ -14,6 +14,7 @@ import { AnswersModule } from './answers/answers.module';
 import { Answer } from './answers/entities/answer.entity';
 import { DataSourceProvider } from './db/data-source.provider';
 import { AttemptsModule } from './attempts/attempts.module';
+import * as dotenv from 'dotenv';
 
 
 @Module({
@@ -21,10 +22,10 @@ import { AttemptsModule } from './attempts/attempts.module';
     TypeOrmModule.forRoot({
       type: 'postgres',
       host: 'localhost',
-      port: 54033,
-      username: 'quizuser',
-      password: 'quizdbpass',
-      database: 'quizdb',
+      port: parseInt(process.env.DB_PORT, 10),
+      username: process.env.DB_USER,
+      password: process.env.DB_PASSWORD,
+      database: process.env.DB_NAME,
       entities: [
         User, Quiz, Question, Answer,
         // 'src/**/entities/*.entity.ts'
