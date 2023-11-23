@@ -1,8 +1,8 @@
 import { Resolver, Query, Mutation, Args, Int, ID, ResolveProperty, Parent } from '@nestjs/graphql';
 import { AnswersService } from './answers.service';
 import { Answer } from './entities/answer.entity';
-import { CreateAnswerFullInput, CreateAnswerInput } from './dto/create-answer.input';
-import { UpdateAnswerFullInput, UpdateAnswerInput } from './dto/update-answer.input';
+import { CreateAnswerFullInput } from './dto/create-answer.input';
+import { UpdateAnswerFullInput } from './dto/update-answer.input';
 import { Question } from 'src/questions/entities/question.entity';
 
 @Resolver(() => Answer)
