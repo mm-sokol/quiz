@@ -13,7 +13,9 @@ import { Question } from './questions/entities/question.entity';
 import { AnswersModule } from './answers/answers.module';
 import { Answer } from './answers/entities/answer.entity';
 import { DataSourceProvider } from './db/data-source.provider';
-import { AttemptsModule } from './attempts/attempts.module';
+import { QuizTakesModule } from './quiz-takes/quiz-takes.module';
+import { QuestionTakesModule } from './question-takes/question-takes.module';
+import { AnswerTakesModule } from './answer-takes/answer-takes.module';
 import * as dotenv from 'dotenv';
 
 
@@ -47,7 +49,9 @@ import * as dotenv from 'dotenv';
     QuizesModule,
     QuestionsModule,
     AnswersModule,
-    AttemptsModule
+    QuizTakesModule,
+    QuestionTakesModule,
+    AnswerTakesModule
   ],
   controllers: [AppController],
   providers: [AppService, DataSourceProvider],

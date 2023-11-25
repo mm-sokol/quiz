@@ -1,5 +1,5 @@
 import { ObjectType, Field, Int, ID } from '@nestjs/graphql';
-import { AnswerAttempt } from 'src/attempts/entities/answer-attempt.entity';
+import { AnswerTake } from 'src/answer-takes/entities/answer-take.entity';
 import { Question } from 'src/questions/entities/question.entity';
 import { Column, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 
@@ -26,7 +26,7 @@ export class Answer {
   @ManyToOne(() => Question, (question) => question.answers)
   question: Question;
 
-  @OneToMany(() => AnswerAttempt, (attempt) => attempt.answer)
-  @Field(type => [AnswerAttempt], {nullable: true, defaultValue: []})
-  solvingAttempts: AnswerAttempt[];
+  // @OneToMany(() => AnswerTake, (take) => take.answer)
+  // @Field(type => [AnswerTake], {nullable: true, defaultValue: []})
+  // solvingTakes: AnswerTake[];
 }
