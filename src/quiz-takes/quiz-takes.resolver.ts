@@ -2,7 +2,6 @@ import { Resolver, Query, Mutation, Args, Int } from '@nestjs/graphql';
 import { QuizTakesService } from './quiz-takes.service';
 import { QuizTake } from './entities/quiz-take.entity';
 import { CreateQuizTakeInput } from './dto/create-quiz-take.input';
-import { UpdateQuizTakeInput } from './dto/update-quiz-take.input';
 
 @Resolver(() => QuizTake)
 export class QuizTakesResolver {
@@ -13,19 +12,19 @@ export class QuizTakesResolver {
     return this.quizTakesService.create(createQuizTakeInput);
   }
 
-  @Query(() => [QuizTake], { name: 'quizTakes' })
+  @Query(() => [QuizTake], { name: 'allTakes' })
   findAll() {
     return this.quizTakesService.findAll();
   }
 
   @Query(() => QuizTake, { name: 'quizTake' })
-  findOne(@Args('id', { type: () => Int }) id: number) {
-    return this.quizTakesService.findOne(id);
+  findQuizTakes(@Args('id', { type: () => Int }) quizId: number) {
+    return this.quizTakesService.findQuizTakes(quizId);
   }
 
-  @Mutation(() => QuizTake)
-  updateQuizTake(@Args('updateQuizTakeInput') updateQuizTakeInput: UpdateQuizTakeInput) {
-    return this.quizTakesService.update(updateQuizTakeInput.id, updateQuizTakeInput);
+  @Query(() => QuizTake, { name: 'userTakes' })
+  findUserTakes(@Args('id', { type: () => Int }) userId: number) {
+    return this.quizTakesService.findUserTakes(userId);
   }
 
   @Mutation(() => QuizTake)
