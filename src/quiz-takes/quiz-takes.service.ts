@@ -1,9 +1,12 @@
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { CreateQuizTakeInput } from './dto/create-quiz-take.input';
-import { UpdateQuizTakeInput } from './dto/update-quiz-take.input';
+import { DataSource } from 'typeorm';
 
 @Injectable()
 export class QuizTakesService {
+
+  constructor(@Inject('DataSourceService') private readonly dataSource: DataSource) {}
+
   create(createQuizTakeInput: CreateQuizTakeInput) {
     return 'This action adds a new quizTake';
   }
@@ -12,12 +15,12 @@ export class QuizTakesService {
     return `This action returns all quizTakes`;
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} quizTake`;
+  findQuizTakes(quizId: number) {
+    return `This action returns a #${quizId} quizTake`;
   }
 
-  update(id: number, updateQuizTakeInput: UpdateQuizTakeInput) {
-    return `This action updates a #${id} quizTake`;
+  findUserTakes(userId: number) {
+    return "";
   }
 
   remove(id: number) {
