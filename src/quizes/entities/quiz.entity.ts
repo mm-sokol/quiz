@@ -19,7 +19,7 @@ export class Quiz {
   @Field(type => [Question], {nullable: true, defaultValue: []})
   questions: Question[];
 
-  // @OneToMany(() => QuizTake, (take) => take.quiz, {nullable: true})
-  // @Field(type => [QuizTake], {nullable: true, defaultValue: []})
-  // solvingTakes: QuizTake[]
+  @OneToMany(() => QuizTake, (take) => take.quiz, {nullable: true})
+  @Field(type => [QuizTake], {nullable: true, defaultValue: []})
+  takes: QuizTake[]
 }
