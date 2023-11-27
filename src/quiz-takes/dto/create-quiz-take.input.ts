@@ -23,19 +23,12 @@ export class QuestionInput {
   @Field()
   text?: string;
 
+  @Field(() => ID)
+  correctAnswerId?: number; 
+
   @Field(() => [ID])
   correctAnswers?: number[];
 
-  @Field(() => [SortingInput])
-  sortedAnswers?: SortingInput[];
-}
-
-@InputType()
-export class SortingInput {
-  
-  @Field(() => Int)
-  answerId: number;
-
-  @Field(() => Int)
-  orderingNumber: number;
+  @Field(() => [ID])
+  sortedAnswers?: number[];
 }

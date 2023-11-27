@@ -1,29 +1,140 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { BadRequestException, HttpException, HttpStatus, Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { CreateQuizTakeInput } from './dto/create-quiz-take.input';
-import { DataSource } from 'typeorm';
+import { DataSource, Repository } from 'typeorm';
+import { InjectRepository } from '@nestjs/typeorm';
+import { QuizTake } from './entities/quiz-take.entity';
+import { Quiz } from 'src/quizes/entities/quiz.entity';
+import { Question, QuestionType } from 'src/questions/entities/question.entity';
+import { Answer } from 'src/answers/entities/answer.entity';
+import { User } from 'src/users/entities/user.entity';
 
 @Injectable()
 export class QuizTakesService {
 
-  constructor(@Inject('DataSourceService') private readonly dataSource: DataSource) {}
+  constructor(
+    @InjectRepository(QuizTake) private readonly takeRepository: Repository<QuizTake>,
+    @Inject('DataSourceService') private readonly dataSource: DataSource) {}
 
   create(createQuizTakeInput: CreateQuizTakeInput) {
-    return 'This action adds a new quizTake';
+    const created = this.dataSource.transaction(async (manager) => {
+      try {
+
+        const quiz = await manager.findOneBy(Quiz, {id: createQuizTakeInput.quizId});
+        if (!quiz) {
+          throw new NotFoundException(`Quiz doesn't exist.`);
+        }
+        const user = await manager.findOneBy(User, {id: createQuizTakeInput.userId});
+        if (!user) {
+          throw new NotFoundException(`User doesn't exist.`);
+        }
+
+        let score = 0;
+        const givenAnswers = createQuizTakeInput.givenAnswers;
+        for (let i in givenAnswers) {
+          const relatedQuestion = await manager.findOneByOrFail(Question, {id: givenAnswers[i].questionId});
+          if (!relatedQuestion) {
+            throw new NotFoundException(`Related question to ${i} given answer not found`);
+          }
+          else if (relatedQuestion.quizId != quiz.id) {
+            throw new HttpException(`Relted question doesn't belong to quiz of id ${quiz.id}`, HttpStatus.FORBIDDEN);
+          }
+          const relatedAnswers = await manager.find(Answer, {where: {questionId: relatedQuestion.id}});
+          if (!relatedAnswers) {
+            throw new NotFoundException(`Not found answers to related question ${relatedQuestion.id}`);
+          }
+
+
+          switch (relatedQuestion.type) {
+            case QuestionType.TEXT_ANSWER:
+              if (givenAnswers[i].text == null) {
+                throw new BadRequestException(`Text answer not provided`);
+              }
+
+              for (let answer of relatedAnswers) {
+                if (givenAnswers[i].text === answer.contents) {
+                  score +=1;
+                  break;
+                }
+              }
+
+              break;
+            case QuestionType.SORT_SQUENCE:
+              if (givenAnswers[i].sortedAnswers == null ) {
+                throw new BadRequestException(`Sorted sequence not provided`);
+              }
+              if (givenAnswers[i].sortedAnswers.length < relatedAnswers.length) {
+                throw new BadRequestException(`All answers have to be sorted`);
+              }
+
+              for (let p in givenAnswers[i].sortedAnswers) {
+                let answer = relatedAnswers.find((ans) => ans.id === givenAnswers[i].sortedAnswers[p]);
+                if (!answer) {
+                  throw new BadRequestException(`Bad answer id in sorted sequence ${givenAnswers[i].sortedAnswers[p]}`);
+                } 
+                if (answer.correctStatus === +p) {
+                  score +=1;
+                }
+              }
+              
+              break;
+            case QuestionType.MULTIPLE_CHOICE:
+              if (givenAnswers[i].correctAnswers == null ) {
+                throw new BadRequestException(`Correct answer array not provided`);
+              }
+              const correctIds = relatedAnswers.filter(ans => {ans.correctStatus === 1}).map((ans) => ans.id).sort();
+              const givenCorrectIds = givenAnswers[i].correctAnswers.sort();
+              if (correctIds === givenCorrectIds) {
+                score +=1;
+              }
+
+
+              break;
+            case QuestionType.SINGLE_CHOICE:
+              if (givenAnswers[i].correctAnswerId == null ) {
+                throw new BadRequestException(`Correct answer not provided`);
+              }
+              const correct = relatedAnswers.find(ans => {ans.correctStatus === 1});
+              if (correct.id === givenAnswers[i].correctAnswerId) {
+                score +=1;
+              }
+
+              break;
+            default:
+              throw new  HttpException(`Unknown question type: ${relatedQuestion.type}`, HttpStatus.FORBIDDEN);
+          }
+        }
+
+        const take = manager.create(QuizTake, {...createQuizTakeInput, score: score});
+        return manager.save(QuizTake, take);
+
+      } catch (error) {
+        throw new BadRequestException(`Transaction failed: ${error.message}`);
+      }
+    });
+    return created;
   }
 
   findAll() {
-    return `This action returns all quizTakes`;
+    return this.takeRepository.find();
   }
 
   findQuizTakes(quizId: number) {
-    return `This action returns a #${quizId} quizTake`;
+    return this.takeRepository.findBy({quizId});
   }
 
   findUserTakes(userId: number) {
-    return "";
+    return this.takeRepository.findBy({userId});
   }
 
   remove(id: number) {
-    return `This action removes a #${id} quizTake`;
+    const removed = this.dataSource.transaction(async (manager) => {
+      try {
+        const toRemove = await manager.findOneByOrFail(QuizTake, {id});
+        return manager.remove(QuizTake, toRemove);
+      } catch (error) {
+        throw new NotFoundException(`Transaction failed: ${error.message}`);
+      }
+    });
+    return removed;
   }
 }
