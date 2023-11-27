@@ -43,6 +43,6 @@ export class User {
 
   @OneToMany(() => QuizTake, (attempt) => attempt.user)
   @Field(() => [QuizTake], {nullable: true, defaultValue: null})
-  quizTakes: QuizTake[]
+  quizTakes?: QuizTake[]
 
 }
