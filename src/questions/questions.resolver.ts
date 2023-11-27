@@ -1,7 +1,7 @@
-import { Resolver, Query, Mutation, Args, Int, ID, ResolveProperty, Parent } from '@nestjs/graphql';
+import { Resolver, Query, Mutation, Args, Int, Parent, ResolveField } from '@nestjs/graphql';
 import { QuestionsService } from './questions.service';
 import { Question } from './entities/question.entity';
-import { CreateQuestionFullInput, CreateQuestionInput } from './dto/create-question.input';
+import { CreateQuestionFullInput } from './dto/create-question.input';
 import { UpdateQuestionFullInput } from './dto/update-question.input';
 import { Quiz } from 'src/quizes/entities/quiz.entity';
 import { CreateAnswerInput } from 'src/answers/dto/create-answer.input';
@@ -32,7 +32,7 @@ export class QuestionsResolver {
     return this.questionsService.findOne(id);
   }
 
-  @ResolveProperty(() => Quiz)
+  @ResolveField(() => Quiz)
   quiz(@Parent() question: Question) {
     return question.quiz;
   }

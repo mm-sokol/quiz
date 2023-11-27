@@ -1,4 +1,4 @@
-import { Resolver, Query, Mutation, Args, Int, ID, ResolveProperty, Parent } from '@nestjs/graphql';
+import { Resolver, Query, Mutation, Args, Int, ID, Parent, ResolveField } from '@nestjs/graphql';
 import { AnswersService } from './answers.service';
 import { Answer } from './entities/answer.entity';
 import { CreateAnswerFullInput } from './dto/create-answer.input';
@@ -38,7 +38,7 @@ export class AnswersResolver {
     return this.answersService.remove(id);
   }
 
-  @ResolveProperty(() => Question)
+  @ResolveField(() => Question)
   question(@Parent() answer: Answer) {
     return answer.question;
   }
