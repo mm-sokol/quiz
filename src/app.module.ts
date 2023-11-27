@@ -14,9 +14,8 @@ import { AnswersModule } from './answers/answers.module';
 import { Answer } from './answers/entities/answer.entity';
 import { DataSourceProvider } from './db/data-source.provider';
 import { QuizTakesModule } from './quiz-takes/quiz-takes.module';
-import { QuestionTakesModule } from './question-takes/question-takes.module';
-import { AnswerTakesModule } from './answer-takes/answer-takes.module';
 import * as dotenv from 'dotenv';
+import { QuizTake } from './quiz-takes/entities/quiz-take.entity';
 
 
 @Module({
@@ -24,12 +23,12 @@ import * as dotenv from 'dotenv';
     TypeOrmModule.forRoot({
       type: 'postgres',
       host: 'localhost',
-      port: parseInt(process.env.DB_PORT, 10),
-      username: process.env.DB_USER,
-      password: process.env.DB_PASSWORD,
-      database: process.env.DB_NAME,
+      port: 54033,
+      username: "quizuser",
+      password: "quizdbpass",
+      database: "quizdb",
       entities: [
-        User, Quiz, Question, Answer,
+        User, Quiz, Question, Answer, QuizTake
         // 'src/**/entities/*.entity.ts'
         // __dirname + '/**/*.entity.ts'
       ],
@@ -49,9 +48,7 @@ import * as dotenv from 'dotenv';
     QuizesModule,
     QuestionsModule,
     AnswersModule,
-    QuizTakesModule,
-    QuestionTakesModule,
-    AnswerTakesModule
+    QuizTakesModule
   ],
   controllers: [AppController],
   providers: [AppService, DataSourceProvider],
