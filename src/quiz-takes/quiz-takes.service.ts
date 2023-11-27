@@ -13,24 +13,29 @@ export class QuizTakesService {
 
   constructor(
     @InjectRepository(QuizTake) private readonly takeRepository: Repository<QuizTake>,
-    @Inject('DataSourceService') private readonly dataSource: DataSource) {}
+    @Inject('DataSourceProvider') private readonly dataSource: DataSource) {}
 
   create(createQuizTakeInput: CreateQuizTakeInput) {
     const created = this.dataSource.transaction(async (manager) => {
       try {
-
+        let z=0;
+        console.log(`---> ${z++}`);
         const quiz = await manager.findOneBy(Quiz, {id: createQuizTakeInput.quizId});
         if (!quiz) {
           throw new NotFoundException(`Quiz doesn't exist.`);
         }
+        console.log(`---> ${z++}`);
         const user = await manager.findOneBy(User, {id: createQuizTakeInput.userId});
         if (!user) {
           throw new NotFoundException(`User doesn't exist.`);
         }
+        console.log(`---> ${z++}`);
 
         let score = 0;
         const givenAnswers = createQuizTakeInput.givenAnswers;
         for (let i in givenAnswers) {
+          console.log(`---> ${z++}`);
+          
           const relatedQuestion = await manager.findOneByOrFail(Question, {id: givenAnswers[i].questionId});
           if (!relatedQuestion) {
             throw new NotFoundException(`Related question to ${i} given answer not found`);
@@ -38,14 +43,17 @@ export class QuizTakesService {
           else if (relatedQuestion.quizId != quiz.id) {
             throw new HttpException(`Relted question doesn't belong to quiz of id ${quiz.id}`, HttpStatus.FORBIDDEN);
           }
+          console.log(`---> ${z++}`);
           const relatedAnswers = await manager.find(Answer, {where: {questionId: relatedQuestion.id}});
           if (!relatedAnswers) {
             throw new NotFoundException(`Not found answers to related question ${relatedQuestion.id}`);
           }
+          console.log(`---> ${z++}`);
 
 
           switch (relatedQuestion.type) {
             case QuestionType.TEXT_ANSWER:
+              console.log(`TEXT_ANSWER> ${z++}`);
               if (givenAnswers[i].text == null) {
                 throw new BadRequestException(`Text answer not provided`);
               }
@@ -59,6 +67,7 @@ export class QuizTakesService {
 
               break;
             case QuestionType.SORT_SQUENCE:
+              console.log(`SORT_SQUENCE> ${z++}`);
               if (givenAnswers[i].sortedAnswers == null ) {
                 throw new BadRequestException(`Sorted sequence not provided`);
               }
@@ -78,6 +87,7 @@ export class QuizTakesService {
               
               break;
             case QuestionType.MULTIPLE_CHOICE:
+              console.log(`MULTIPLE_CHOICE> ${z++}`);
               if (givenAnswers[i].correctAnswers == null ) {
                 throw new BadRequestException(`Correct answer array not provided`);
               }
@@ -90,14 +100,22 @@ export class QuizTakesService {
 
               break;
             case QuestionType.SINGLE_CHOICE:
+              console.log(`SINGLE_CHOICE> ${z++}`);
               if (givenAnswers[i].correctAnswerId == null ) {
                 throw new BadRequestException(`Correct answer not provided`);
               }
-              const correct = relatedAnswers.find(ans => {ans.correctStatus === 1});
+              console.log(`SINGLE_CHOICE> ${z++}`);
+
+              console.log(JSON.stringify(relatedAnswers, null, 4));
+              const correct = relatedAnswers.filter(item => item.correctStatus === 1)[0];
+
+              console.log(`SINGLE_CHOICE> ${z++}`);
+              console.log(JSON.stringify(correct, null, 4));
               if (correct.id === givenAnswers[i].correctAnswerId) {
+                console.log(`SINGLE_CHOICE> ${z++}`);
                 score +=1;
               }
-
+              console.log(`SINGLE_CHOICE> ${z++}`);
               break;
             default:
               throw new  HttpException(`Unknown question type: ${relatedQuestion.type}`, HttpStatus.FORBIDDEN);

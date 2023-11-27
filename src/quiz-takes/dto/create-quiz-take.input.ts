@@ -20,15 +20,15 @@ export class QuestionInput {
   @Field(() => ID)
   questionId: number;
 
-  @Field()
+  @Field({nullable: true})
   text?: string;
 
-  @Field(() => ID)
+  @Field(() => Int, {nullable: true})
   correctAnswerId?: number; 
 
-  @Field(() => [ID])
+  @Field(() => [Int], {nullable: true})
   correctAnswers?: number[];
 
-  @Field(() => [ID])
+  @Field(() => [Int], {nullable: true})
   sortedAnswers?: number[];
 }
