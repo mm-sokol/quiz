@@ -8,7 +8,9 @@ export class QuizTakesResolver {
   constructor(private readonly quizTakesService: QuizTakesService) {}
 
   @Mutation(() => QuizTake)
-  createQuizTake(@Args('createQuizTakeInput') createQuizTakeInput: CreateQuizTakeInput) {
+  createQuizTake(
+    @Args('createQuizTakeInput') createQuizTakeInput: CreateQuizTakeInput,
+  ) {
     return this.quizTakesService.create(createQuizTakeInput);
   }
 

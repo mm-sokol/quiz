@@ -3,11 +3,9 @@ import { INestApplication } from '@nestjs/common';
 import * as request from 'supertest';
 import { AppModule } from './../src/app.module';
 import { testDataSource } from 'test/utils/test-data-source';
-import dotenv from 'dotenv'; 
+import dotenv from 'dotenv';
 
 dotenv.config();
-
-
 
 describe('AppController (e2e)', () => {
   let app: INestApplication;
@@ -28,7 +26,7 @@ describe('AppController (e2e)', () => {
   afterAll(async () => {
     await testDataSource.dropDatabase();
     await app.close();
-  }); 
+  });
 
   it('/ (GET)', () => {
     return request(app.getHttpServer())
@@ -36,5 +34,4 @@ describe('AppController (e2e)', () => {
       .expect(200)
       .expect('Hello World!');
   });
-  
 });

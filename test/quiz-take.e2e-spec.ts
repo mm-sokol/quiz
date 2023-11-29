@@ -7,58 +7,57 @@ import { testUsers } from './utils/user.stub';
 import { testQuiz } from './utils/quiz.stub';
 import { testQuestions } from './utils/question.stub';
 
-
 const gql = '/graphql';
-
 
 describe('Graphql QuizTakeResolver (e2e)', () => {
   let app: INestApplication;
 
   beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
-      imports: [
-        AppModule
-      ],
+      imports: [AppModule],
     }).compile();
 
     app = moduleFixture.createNestApplication();
     await app.init();
     await testDataSource.initialize();
-    await testDataSource.dropDatabase();  
+    await testDataSource.dropDatabase();
 
     await request(app.getHttpServer())
-    .post(gql)
-    .send({ query: `
+      .post(gql)
+      .send({
+        query: `
         mutation {
-            createUser(createUserInput:${
-            JSON.stringify(testUsers[0])
-            }) {id}
+            createUser(createUserInput:${JSON.stringify(testUsers[0])}) {id}
         }    
-    `}).expect(200);
+    `,
+      })
+      .expect(200);
 
     await request(app.getHttpServer())
-    .post(gql)
-    .send({ query: `
+      .post(gql)
+      .send({
+        query: `
         mutation {
             createQuiz(createQuizInput: ${JSON.stringify(testQuiz)},
             createQuestionArray: ${JSON.stringify(testQuestions)}
             ) {id}
         }
-    `}).expect(200);
+    `,
+      })
+      .expect(200);
+  });
 
-    });
+  afterAll(async () => {
+    await testDataSource.dropDatabase();
+    await app.close();
+  });
 
-    afterAll(async () => {
-      await testDataSource.dropDatabase();
-      await app.close();
-    }); 
-
-    describe('create quiz take', ()=>{
-
-        it('should create quiz-take', async () => {
-          const response = await request(app.getHttpServer())
-          .post(gql)
-          .send({ query: `
+  describe('create quiz take', () => {
+    it('should create quiz-take', async () => {
+      const response = await request(app.getHttpServer())
+        .post(gql)
+        .send({
+          query: `
           mutation {
             createQuizTake(createQuizTakeInput: {
               quizId: 1,
@@ -66,18 +65,20 @@ describe('Graphql QuizTakeResolver (e2e)', () => {
               givenAnswers: []
             }) {id, score}
           }
-          `});
-
-          expect(response.body.createQuizTake).toBeDefined();
-          expect(response.body.createQuizTake.score).toEqual(0);
+          `,
         });
-    });
 
-    describe('answer multiple choice', ()=>{
-        it('should score answer to multiple choice', async () => {
-          const response = await request(app.getHttpServer())
-          .post(gql)
-          .send({ query: `
+      expect(response.body.createQuizTake).toBeDefined();
+      expect(response.body.createQuizTake.score).toEqual(0);
+    });
+  });
+
+  describe('answer multiple choice', () => {
+    it('should score answer to multiple choice', async () => {
+      const response = await request(app.getHttpServer())
+        .post(gql)
+        .send({
+          query: `
           mutation {
             createQuizTake(createQuizTakeInput: {
               quizId: 1,
@@ -90,16 +91,18 @@ describe('Graphql QuizTakeResolver (e2e)', () => {
               ]
             }) {id, score}
           }
-          `});
-
-          expect(response.body.createQuizTake).toBeDefined();
-          expect(response.body.createQuizTake.score).toEqual(1);
+          `,
         });
 
-        it('should not score anwser to multiple choice', async () => {
-          const response = await request(app.getHttpServer())
-          .post(gql)
-          .send({ query: `
+      expect(response.body.createQuizTake).toBeDefined();
+      expect(response.body.createQuizTake.score).toEqual(1);
+    });
+
+    it('should not score anwser to multiple choice', async () => {
+      const response = await request(app.getHttpServer())
+        .post(gql)
+        .send({
+          query: `
           mutation {
             createQuizTake(createQuizTakeInput: {
               quizId: 1,
@@ -112,18 +115,20 @@ describe('Graphql QuizTakeResolver (e2e)', () => {
               ]
             }) {id, score}
           }
-          `});
-
-          expect(response.body.createQuizTake).toBeDefined();
-          expect(response.body.createQuizTake.score).toEqual(0);        
+          `,
         });
-      });
 
-      describe('answer sort sequence question', ()=>{
-        it('should score anwser to sort sequence', async () => {
-          const response = await request(app.getHttpServer())
-          .post(gql)
-          .send({ query: `
+      expect(response.body.createQuizTake).toBeDefined();
+      expect(response.body.createQuizTake.score).toEqual(0);
+    });
+  });
+
+  describe('answer sort sequence question', () => {
+    it('should score anwser to sort sequence', async () => {
+      const response = await request(app.getHttpServer())
+        .post(gql)
+        .send({
+          query: `
           mutation {
             createQuizTake(createQuizTakeInput: {
               quizId: 1,
@@ -136,16 +141,18 @@ describe('Graphql QuizTakeResolver (e2e)', () => {
               ]
             }) {id, score}
           }
-          `});
-
-          expect(response.body.createQuizTake).toBeDefined();
-          expect(response.body.createQuizTake.score).toEqual(1);        
+          `,
         });
 
-        it('should not score anwser to sort sequence', async () => {
-          const response = await request(app.getHttpServer())
-          .post(gql)
-          .send({ query: `
+      expect(response.body.createQuizTake).toBeDefined();
+      expect(response.body.createQuizTake.score).toEqual(1);
+    });
+
+    it('should not score anwser to sort sequence', async () => {
+      const response = await request(app.getHttpServer())
+        .post(gql)
+        .send({
+          query: `
           mutation {
             createQuizTake(createQuizTakeInput: {
               quizId: 1,
@@ -158,16 +165,18 @@ describe('Graphql QuizTakeResolver (e2e)', () => {
               ]
             }) {id, score}
           }
-          `});
-
-          expect(response.body.createQuizTake).toBeDefined();
-          expect(response.body.createQuizTake.score).toEqual(0);        
+          `,
         });
 
-        it('should raise error (sort sequence)', async () => {
-          const response = await request(app.getHttpServer())
-          .post(gql)
-          .send({ query: `
+      expect(response.body.createQuizTake).toBeDefined();
+      expect(response.body.createQuizTake.score).toEqual(0);
+    });
+
+    it('should raise error (sort sequence)', async () => {
+      const response = await request(app.getHttpServer())
+        .post(gql)
+        .send({
+          query: `
           mutation {
             createQuizTake(createQuizTakeInput: {
               quizId: 1,
@@ -180,15 +189,17 @@ describe('Graphql QuizTakeResolver (e2e)', () => {
               ]
             }) {id, score}
           }
-          `});
+          `,
+        });
 
-          expect(response.body.errors).toBeDefined();
-        }); 
+      expect(response.body.errors).toBeDefined();
+    });
 
-        it('should raise error (sort sequence)', async () => {
-          const response = await request(app.getHttpServer())
-          .post(gql)
-          .send({ query: `
+    it('should raise error (sort sequence)', async () => {
+      const response = await request(app.getHttpServer())
+        .post(gql)
+        .send({
+          query: `
           mutation {
             createQuizTake(createQuizTakeInput: {
               quizId: 1,
@@ -201,17 +212,19 @@ describe('Graphql QuizTakeResolver (e2e)', () => {
               ]
             }) {id, score}
           }
-          `});
+          `,
+        });
 
-          expect(response.body.errors).toBeDefined();
-        });  
-      });
+      expect(response.body.errors).toBeDefined();
+    });
+  });
 
-      describe('answer sort sequence question', ()=>{
-        it('should score sigle choice answer', async () => {
-          const response = await request(app.getHttpServer())
-          .post(gql)
-          .send({ query: `
+  describe('answer sort sequence question', () => {
+    it('should score sigle choice answer', async () => {
+      const response = await request(app.getHttpServer())
+        .post(gql)
+        .send({
+          query: `
           mutation {
             createQuizTake(createQuizTakeInput: {
               quizId: 1,
@@ -224,21 +237,21 @@ describe('Graphql QuizTakeResolver (e2e)', () => {
               ]
             }) {id, userId, score}
           }
-          `});
+          `,
+        });
 
-          expect(response.body.createQuizTake).toBeDefined();
-          expect(response.body.createQuizTake.score).toEqual(1);  
-          expect(response.body.createQuizTake.userId).toEqual(1);              
-        });  
+      expect(response.body.createQuizTake).toBeDefined();
+      expect(response.body.createQuizTake.score).toEqual(1);
+      expect(response.body.createQuizTake.userId).toEqual(1);
+    });
+  });
 
-      });
-
-      describe('answer single choice question', ()=>{
-
-        it('should not score sigle choice answer', async () => {
-          const response = await request(app.getHttpServer())
-          .post(gql)
-          .send({ query: `
+  describe('answer single choice question', () => {
+    it('should not score sigle choice answer', async () => {
+      const response = await request(app.getHttpServer())
+        .post(gql)
+        .send({
+          query: `
           mutation {
             createQuizTake(createQuizTakeInput: {
               quizId: 1,
@@ -251,17 +264,19 @@ describe('Graphql QuizTakeResolver (e2e)', () => {
               ]
             }) {id, userId, score}
           }
-          `});
-
-          expect(response.body.createQuizTake).toBeDefined();
-          expect(response.body.createQuizTake.score).toEqual(0);  
-          expect(response.body.createQuizTake.userId).toEqual(1);              
+          `,
         });
 
-        it('should raise error (sigle choice)', async () => {
-          const response = await request(app.getHttpServer())
-          .post(gql)
-          .send({ query: `
+      expect(response.body.createQuizTake).toBeDefined();
+      expect(response.body.createQuizTake.score).toEqual(0);
+      expect(response.body.createQuizTake.userId).toEqual(1);
+    });
+
+    it('should raise error (sigle choice)', async () => {
+      const response = await request(app.getHttpServer())
+        .post(gql)
+        .send({
+          query: `
           mutation {
             createQuizTake(createQuizTakeInput: {
               quizId: 1,
@@ -273,19 +288,19 @@ describe('Graphql QuizTakeResolver (e2e)', () => {
               ]
             }) {id, userId, score}
           }
-          `});
-
-          expect(response.body.errors).toBeDefined();             
+          `,
         });
-      });
 
+      expect(response.body.errors).toBeDefined();
+    });
+  });
 
-      describe('answer text input question', ()=>{
-        
-        it('should score text answer', async () => {
-          const response = await request(app.getHttpServer())
-          .post(gql)
-          .send({ query: `
+  describe('answer text input question', () => {
+    it('should score text answer', async () => {
+      const response = await request(app.getHttpServer())
+        .post(gql)
+        .send({
+          query: `
           mutation {
             createQuizTake(createQuizTakeInput: {
               quizId: 1,
@@ -298,18 +313,19 @@ describe('Graphql QuizTakeResolver (e2e)', () => {
               ]
             }) {id, userId, score}
           }
-          `});
+          `,
+        });
 
-          expect(response.body.createQuizTake).toBeDefined();
-          expect(response.body.createQuizTake.score).toEqual(1);  
-          expect(response.body.createQuizTake.userId).toEqual(1);              
-        }); 
-        
-        
-        it('should not score text answer', async () => {
-          const response = await request(app.getHttpServer())
-          .post(gql)
-          .send({ query: `
+      expect(response.body.createQuizTake).toBeDefined();
+      expect(response.body.createQuizTake.score).toEqual(1);
+      expect(response.body.createQuizTake.userId).toEqual(1);
+    });
+
+    it('should not score text answer', async () => {
+      const response = await request(app.getHttpServer())
+        .post(gql)
+        .send({
+          query: `
           mutation {
             createQuizTake(createQuizTakeInput: {
               quizId: 1,
@@ -322,17 +338,19 @@ describe('Graphql QuizTakeResolver (e2e)', () => {
               ]
             }) {id, userId, score}
           }
-          `});
+          `,
+        });
 
-          expect(response.body.createQuizTake).toBeDefined();
-          expect(response.body.createQuizTake.score).toEqual(0);  
-          expect(response.body.createQuizTake.userId).toEqual(1);              
-        });         
-      
-        it('should raise error (text answer)', async () => {
-          const response = await request(app.getHttpServer())
-          .post(gql)
-          .send({ query: `
+      expect(response.body.createQuizTake).toBeDefined();
+      expect(response.body.createQuizTake.score).toEqual(0);
+      expect(response.body.createQuizTake.userId).toEqual(1);
+    });
+
+    it('should raise error (text answer)', async () => {
+      const response = await request(app.getHttpServer())
+        .post(gql)
+        .send({
+          query: `
           mutation {
             createQuizTake(createQuizTakeInput: {
               quizId: 1,
@@ -345,15 +363,17 @@ describe('Graphql QuizTakeResolver (e2e)', () => {
               ]
             }) {id, userId, score}
           }
-          `});
+          `,
+        });
 
-          expect(response.body.errors).toBeDefined();            
-        });    
-        
-        it('should raise error (text answer)', async () => {
-          const response = await request(app.getHttpServer())
-          .post(gql)
-          .send({ query: `
+      expect(response.body.errors).toBeDefined();
+    });
+
+    it('should raise error (text answer)', async () => {
+      const response = await request(app.getHttpServer())
+        .post(gql)
+        .send({
+          query: `
           mutation {
             createQuizTake(createQuizTakeInput: {
               quizId: 1,
@@ -366,9 +386,10 @@ describe('Graphql QuizTakeResolver (e2e)', () => {
               ]
             }) {id, userId, score}
           }
-          `});
+          `,
+        });
 
-          expect(response.body.errors).toBeDefined();            
-        });      
-      });
+      expect(response.body.errors).toBeDefined();
+    });
+  });
 });

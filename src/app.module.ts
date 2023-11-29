@@ -17,22 +17,25 @@ import { QuizTakesModule } from './quiz-takes/quiz-takes.module';
 import * as dotenv from 'dotenv';
 import { QuizTake } from './quiz-takes/entities/quiz-take.entity';
 
-
 @Module({
   imports: [
     TypeOrmModule.forRoot({
       type: 'postgres',
       host: 'localhost',
       port: 54033,
-      username: "quizuser",
-      password: "quizdbpass",
-      database: "quizdb",
+      username: 'quizuser',
+      password: 'quizdbpass',
+      database: 'quizdb',
       entities: [
-        User, Quiz, Question, Answer, QuizTake
+        User,
+        Quiz,
+        Question,
+        Answer,
+        QuizTake,
         // 'src/**/entities/*.entity.ts'
         // __dirname + '/**/*.entity.ts'
       ],
-      synchronize: true
+      synchronize: true,
     }),
 
     GraphQLModule.forRoot({
@@ -41,14 +44,13 @@ import { QuizTake } from './quiz-takes/entities/quiz-take.entity';
       debug: true,
       playground: true,
       typePaths: ['./**/*.graphql'],
-
     }),
 
     UsersModule,
     QuizesModule,
     QuestionsModule,
     AnswersModule,
-    QuizTakesModule
+    QuizTakesModule,
   ],
   controllers: [AppController],
   providers: [AppService, DataSourceProvider],

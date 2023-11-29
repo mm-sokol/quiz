@@ -9,21 +9,21 @@ describe('UsersResolver', () => {
     create: jest.fn((createDto) => {
       return {
         id: Date.now(),
-        ...createDto
-      }
+        ...createDto,
+      };
     }),
 
     update: jest.fn((id, updateDto) => {
       return {
         id,
-        ...updateDto
-      }
-    })
+        ...updateDto,
+      };
+    }),
   };
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      providers: [UsersResolver,UsersService],
+      providers: [UsersResolver, UsersService],
     })
       .overrideProvider(UsersService)
       .useValue(mockUserService)
@@ -36,12 +36,11 @@ describe('UsersResolver', () => {
     expect(resolver).toBeDefined();
   });
 
-
   it('should create a User', () => {
     const input = {
-      username: "ally032",
-      firstname: "Ally",
-      lastname: "Leigh"
+      username: 'ally032',
+      firstname: 'Ally',
+      lastname: 'Leigh',
     };
     expect(resolver.createUser(input)).toEqual({
       id: expect.any(Number),
@@ -49,23 +48,22 @@ describe('UsersResolver', () => {
       firstname: input.firstname,
       lastname: input.lastname,
       role: UserRole.STUDENT,
-      quizTakes: []
+      quizTakes: [],
     });
     expect(mockUserService.create).toHaveBeenCalled();
   });
 
-
   it('should update a User', () => {
     const input = {
-      username: "parrot",
-      firstname: "Zenon",
-      lastname: "Zen",
+      username: 'parrot',
+      firstname: 'Zenon',
+      lastname: 'Zen',
       role: UserRole.TEACHER,
-      quizTakes: []
+      quizTakes: [],
     };
     expect(resolver.updateUser(3, input)).toEqual({
-      id: 3, 
-      ...input
+      id: 3,
+      ...input,
     });
     expect(mockUserService.update).toHaveBeenCalled();
   });

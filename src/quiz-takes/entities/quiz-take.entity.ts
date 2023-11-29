@@ -5,12 +5,17 @@ import { Quiz } from 'src/quizes/entities/quiz.entity';
 import { User } from 'src/users/entities/user.entity';
 // import { User } from 'src/internal';
 
-import { Column, CreateDateColumn, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  CreateDateColumn,
+  Entity,
+  ManyToOne,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 
 @ObjectType()
 @Entity('quiz_takes')
 export class QuizTake {
-  
   @PrimaryGeneratedColumn()
   @Field(() => ID)
   id: number;
@@ -23,8 +28,8 @@ export class QuizTake {
   @Field(() => Int)
   userId: number;
 
-  @Column({nullable: true, default: 0})
-  @Field(() => Int, {nullable: true, defaultValue: 0})
+  @Column({ nullable: true, default: 0 })
+  @Field(() => Int, { nullable: true, defaultValue: 0 })
   score: number;
 
   @CreateDateColumn()
@@ -36,5 +41,4 @@ export class QuizTake {
 
   @ManyToOne(() => User, (user) => user.quizTakes)
   user: User;
-
 }

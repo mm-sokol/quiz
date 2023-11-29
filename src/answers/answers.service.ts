@@ -7,10 +7,10 @@ import { DataSource, Repository } from 'typeorm';
 
 @Injectable()
 export class AnswersService {
-
   constructor(
-    @InjectRepository(Answer) private readonly answersRepository: Repository<Answer>,
-    @Inject('DataSourceProvider') private readonly dataSource: DataSource
+    @InjectRepository(Answer)
+    private readonly answersRepository: Repository<Answer>,
+    @Inject('DataSourceProvider') private readonly dataSource: DataSource,
   ) {}
 
   async createTransaction(createAnswerInput: CreateAnswerFullInput) {
@@ -23,7 +23,7 @@ export class AnswersService {
 
       await queryRunner.commitTransaction();
       return saved;
-    } catch(error) {
+    } catch (error) {
       await queryRunner.rollbackTransaction();
       throw error;
     } finally {
@@ -36,11 +36,14 @@ export class AnswersService {
   }
 
   findAll() {
-    return this.answersRepository.find({relations: ['question']});
+    return this.answersRepository.find({ relations: ['question'] });
   }
 
   findOne(id: number) {
-    const answer = this.answersRepository.findOne({where: {id}, relations: ['question']});
+    const answer = this.answersRepository.findOne({
+      where: { id },
+      relations: ['question'],
+    });
     if (!answer) {
       throw new NotFoundException(`Answer of id: ${id} not found.`);
     }
@@ -54,13 +57,15 @@ export class AnswersService {
     try {
       const updated = await answerRepository.update(id, updateAnswerInput);
       if (updated.affected === 0) {
-        throw new NotFoundException(`Answer with id: ${id} not found. Cannot update.`);
+        throw new NotFoundException(
+          `Answer with id: ${id} not found. Cannot update.`,
+        );
       }
-      const answer = answerRepository.findOneBy({id});
+      const answer = answerRepository.findOneBy({ id });
 
       await queryRunner.commitTransaction();
       return answer;
-    } catch(error) {
+    } catch (error) {
       await queryRunner.rollbackTransaction();
       throw error;
     } finally {
@@ -74,8 +79,8 @@ export class AnswersService {
 
     await queryRunner.startTransaction();
     try {
-      const toRemove = await answerRepository.findOneBy({id});
-      if(!toRemove) {
+      const toRemove = await answerRepository.findOneBy({ id });
+      if (!toRemove) {
         throw new NotFoundException(`Answer with id: ${id} not found.`);
       }
       const removed = answerRepository.remove(toRemove);

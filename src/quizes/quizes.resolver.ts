@@ -8,13 +8,17 @@ import { QuestionsService } from 'src/questions/questions.service';
 
 @Resolver(() => Quiz)
 export class QuizesResolver {
-  constructor(private readonly quizesService: QuizesService,
-    private readonly questionsService: QuestionsService) {}
+  constructor(
+    private readonly quizesService: QuizesService,
+    private readonly questionsService: QuestionsService,
+  ) {}
 
   @Mutation(() => Quiz)
   createQuiz(
-    @Args('createQuizInput') createQuizInput: CreateQuizInput, 
-    @Args('createQuestionArray', {type: () => [CreateQuestionInput]}) createQuestionArray : CreateQuestionInput[]): Promise<Quiz> {
+    @Args('createQuizInput') createQuizInput: CreateQuizInput,
+    @Args('createQuestionArray', { type: () => [CreateQuestionInput] })
+    createQuestionArray: CreateQuestionInput[],
+  ): Promise<Quiz> {
     return this.quizesService.create(createQuizInput, createQuestionArray);
   }
 
@@ -30,9 +34,9 @@ export class QuizesResolver {
 
   @Mutation(() => Quiz)
   updateQuiz(
-    @Args({name: 'id', type: () => Int}) id: number,
-    @Args({name: 'UpdateQuizInput'}) UpdateQuizInput: UpdateQuizInput
-    ) {
+    @Args({ name: 'id', type: () => Int }) id: number,
+    @Args({ name: 'UpdateQuizInput' }) UpdateQuizInput: UpdateQuizInput,
+  ) {
     return this.quizesService.update(id, UpdateQuizInput);
   }
 

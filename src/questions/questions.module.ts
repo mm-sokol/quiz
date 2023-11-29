@@ -8,6 +8,6 @@ import { DataSourceProvider } from 'src/db/data-source.provider';
 @Module({
   imports: [TypeOrmModule.forFeature([Question])],
   providers: [QuestionsResolver, QuestionsService, DataSourceProvider],
-  exports: [QuestionsService]
+  exports: [QuestionsService],
 })
 export class QuestionsModule {}

@@ -15,9 +15,6 @@ export class CreateUserInput {
   @Field()
   lastname: string;
 
-  @Field(
-    (type) => UserRole,
-    {nullable: true, defaultValue: UserRole.STUDENT}
-  )
+  @Field((type) => UserRole, { nullable: true, defaultValue: UserRole.STUDENT })
   role?: UserRole;
 }

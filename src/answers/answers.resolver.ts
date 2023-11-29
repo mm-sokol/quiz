@@ -1,4 +1,13 @@
-import { Resolver, Query, Mutation, Args, Int, ID, Parent, ResolveField } from '@nestjs/graphql';
+import {
+  Resolver,
+  Query,
+  Mutation,
+  Args,
+  Int,
+  ID,
+  Parent,
+  ResolveField,
+} from '@nestjs/graphql';
 import { AnswersService } from './answers.service';
 import { Answer } from './entities/answer.entity';
 import { CreateAnswerFullInput } from './dto/create-answer.input';
@@ -11,8 +20,9 @@ export class AnswersResolver {
 
   @Mutation(() => Answer)
   createAnswer(
-    @Args('questionId', {type: () => ID}) questionId: number,
-    @Args('createAnswerInput') createAnswerInput: CreateAnswerFullInput) {
+    @Args('questionId', { type: () => ID }) questionId: number,
+    @Args('createAnswerInput') createAnswerInput: CreateAnswerFullInput,
+  ) {
     return this.answersService.createTransaction(createAnswerInput);
   }
 
@@ -28,8 +38,9 @@ export class AnswersResolver {
 
   @Mutation(() => Answer)
   updateAnswer(
-    @Args('id', {type: () => Int}) id: number,
-    @Args('updateAnswerInput') updateAnswerInput: UpdateAnswerFullInput) {
+    @Args('id', { type: () => Int }) id: number,
+    @Args('updateAnswerInput') updateAnswerInput: UpdateAnswerFullInput,
+  ) {
     return this.answersService.update(id, updateAnswerInput);
   }
 

@@ -6,11 +6,9 @@ import { QuizTake } from 'src/internal';
 import { Question } from 'src/internal';
 import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 
-
-@Entity({name: 'quizes'})
+@Entity({ name: 'quizes' })
 @ObjectType()
 export class Quiz {
-
   @PrimaryGeneratedColumn()
   @Field((type) => ID)
   id: number;
@@ -20,10 +18,10 @@ export class Quiz {
   title: string;
 
   @OneToMany(() => Question, (question) => question.quiz)
-  @Field(type => [Question], {nullable: true, defaultValue: []})
+  @Field((type) => [Question], { nullable: true, defaultValue: [] })
   questions: Question[];
 
   @OneToMany(() => QuizTake, (take) => take.quiz)
-  @Field(type => [QuizTake], {nullable: true, defaultValue: []})
-  takes: QuizTake[]
+  @Field((type) => [QuizTake], { nullable: true, defaultValue: [] })
+  takes: QuizTake[];
 }

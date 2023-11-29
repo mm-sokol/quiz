@@ -1,25 +1,24 @@
 import { ObjectType, Field, ID, registerEnumType } from '@nestjs/graphql';
 import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
-import { QuizTake } from 'src/internal'
+import { QuizTake } from 'src/internal';
 
 export enum UserRole {
   STUDENT = 'S',
-  TEACHER = 'T'
+  TEACHER = 'T',
 }
 
 registerEnumType(UserRole, {
-  name: 'UserRole'
+  name: 'UserRole',
 });
 
-@Entity({name: 'users'})
+@Entity({ name: 'users' })
 @ObjectType()
 export class User {
-
   @PrimaryGeneratedColumn()
   @Field(() => ID)
   id: number;
 
-  @Column({unique: true})
+  @Column({ unique: true })
   @Field()
   username: string;
 
@@ -34,15 +33,15 @@ export class User {
   @Column({
     type: 'enum',
     enum: UserRole,
-    default: UserRole.STUDENT
+    default: UserRole.STUDENT,
   })
   @Field(() => UserRole, {
-    nullable: true, 
-    defaultValue: UserRole.STUDENT})
+    nullable: true,
+    defaultValue: UserRole.STUDENT,
+  })
   role: UserRole;
 
   @OneToMany(() => QuizTake, (attempt) => attempt.user)
-  @Field(() => [QuizTake], {nullable: true, defaultValue: null})
-  quizTakes?: QuizTake[]
-
+  @Field(() => [QuizTake], { nullable: true, defaultValue: null })
+  quizTakes?: QuizTake[];
 }

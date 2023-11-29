@@ -8,17 +8,22 @@ describe('UsersService', () => {
   let service: UsersService;
 
   const mockUsersRepository = {
-    create: jest.fn().mockImplementation(dto => dto),
-    save: jest.fn().mockImplementation(user => Promise.resolve({id: Date.now(), ...user}))
+    create: jest.fn().mockImplementation((dto) => dto),
+    save: jest
+      .fn()
+      .mockImplementation((user) =>
+        Promise.resolve({ id: Date.now(), ...user }),
+      ),
   };
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      providers: [UsersService,
+      providers: [
+        UsersService,
         {
           provide: getRepositoryToken(User),
-          useValue: mockUsersRepository
-        }
+          useValue: mockUsersRepository,
+        },
       ],
     }).compile();
 
@@ -34,14 +39,11 @@ describe('UsersService', () => {
       username: 'rob_ot',
       firstname: 'Robert',
       lastname: 'Otto',
-      role: UserRole.STUDENT
+      role: UserRole.STUDENT,
     };
     expect(await service.create(userInput)).toEqual({
       id: expect.any(Number),
-      ...userInput
+      ...userInput,
     });
   });
-
-  
-
 });
