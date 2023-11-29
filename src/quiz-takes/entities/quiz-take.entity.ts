@@ -1,7 +1,11 @@
 import { ObjectType, Field, Int, ID } from '@nestjs/graphql';
 import { Quiz } from 'src/quizes/entities/quiz.entity';
+// import { Quiz } from 'src/internal';
+
 import { User } from 'src/users/entities/user.entity';
-import { Column, CreateDateColumn, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+// import { User } from 'src/internal';
+
+import { Column, CreateDateColumn, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 
 @ObjectType()
 @Entity('quiz_takes')

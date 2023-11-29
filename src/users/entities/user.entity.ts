@@ -1,6 +1,6 @@
 import { ObjectType, Field, ID, registerEnumType } from '@nestjs/graphql';
-import { QuizTake } from 'src/quiz-takes/entities/quiz-take.entity';
 import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import { QuizTake } from 'src/internal'
 
 export enum UserRole {
   STUDENT = 'S',

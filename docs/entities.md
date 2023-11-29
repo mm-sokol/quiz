@@ -3,52 +3,44 @@
 title: Database entities for QuizzServerApp
 ---
 erDiagram
-    USER ||--|| USER-ROLE : has
     USER {
-        int Id
-        string Name
-        string LastName
-        int RoleId
-    }
-
-    USER-ROLE ||--|{ CAPABILITY : has
-    USER-ROLE {
-        int Id
-        string Name
-    }
-
-    CAPABILITY {
-        int Id
-        int RoleId
-        string Capability
+        int id
+        string username
+        string firstname
+        string lastname
+        UserRole role
     }
 
 
     QUIZ ||--|{ QUESTION : has
     QUIZ {
-        int Id
-        string Title
+        int id
+        string title
     }
 
     QUESTION ||--|{ ANSWEAR : has
-    QUESTION ||--|| QUESTION-TYPE : is-of
     QUESTION {
-        int Id
-        string Contents
-        int Type
-        int QuizId
-    }
-
-    QUESTION-TYPE {
-        int Id
-        string Name
+        int id
+        int quizId
+        string contents
+        QuestionType type
     }
 
     ANSWEAR {
-        int Id
-        string Contents
-        int Correctness
-        int QuestionId
+        int id
+        int questionId
+        string contents
+        int correctStatus
     }
+
+    QUIZ-TAKE {
+        int id
+        int quizId
+        int userId
+        Date date
+        int score
+    }
+    USER ||--|{ QUIZ-TAKE : can-have
+    QUIZ ||--|{ QUIZ-TAKE : can-have
 
 ```

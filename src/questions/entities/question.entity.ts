@@ -1,6 +1,7 @@
 import { ObjectType, Field, ID, registerEnumType, Int } from '@nestjs/graphql';
 import { Answer } from 'src/answers/entities/answer.entity';
-import { Quiz } from 'src/quizes/entities/quiz.entity';
+// import { Quiz } from 'src/quizes/entities/quiz.entity';
+import { Quiz } from 'src/internal';
 import { Column, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 
 export enum QuestionType {
