@@ -10,10 +10,10 @@ export const DataSourceProvider: Provider = {
     const dataSource = new DataSource({
       type: 'postgres',
       host: 'localhost',
-      port: parseInt(process.env.DB_PORT),
-      username: process.env.DB_USER,
-      password: process.env.DB_PASSWORD,
-      database: process.env.DB_NAME,
+      port: 54033,
+      username: 'quizuser',
+      password: 'quizdbpass',
+      database: 'quizdb',
       synchronize: true,
       entities: [
         User,
