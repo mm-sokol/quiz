@@ -44,6 +44,7 @@ export class QuizTakesService {
         console.log(`---> ${z++}`);
 
         let score = 0;
+
         const givenAnswers = createQuizTakeInput.givenAnswers;
         for (let i in givenAnswers) {
           console.log(`---> ${z++}`);
@@ -74,11 +75,9 @@ export class QuizTakesService {
 
           switch (relatedQuestion.type) {
             case QuestionType.TEXT_ANSWER:
-              console.log(`TEXT_ANSWER> ${z++}`);
               if (givenAnswers[i].text == null) {
                 throw new BadRequestException(`Text answer not provided`);
               }
-
               for (let answer of relatedAnswers) {
                 if (
                   givenAnswers[i].text.toLocaleLowerCase() ===
@@ -91,7 +90,6 @@ export class QuizTakesService {
 
               break;
             case QuestionType.SORT_SQUENCE:
-              console.log(`SORT_SQUENCE> ${z++}`);
               if (givenAnswers[i].sortedAnswers == null) {
                 throw new BadRequestException(`Sorted sequence not provided`);
               }
@@ -101,6 +99,7 @@ export class QuizTakesService {
                 throw new BadRequestException(`All answers have to be sorted`);
               }
 
+              let sortingCorrect = true;
               for (let p in givenAnswers[i].sortedAnswers) {
                 let answer = relatedAnswers.find(
                   (ans) => ans.id === givenAnswers[i].sortedAnswers[p],
@@ -110,14 +109,16 @@ export class QuizTakesService {
                     `Bad answer id in sorted sequence ${givenAnswers[i].sortedAnswers[p]}`,
                   );
                 }
-                if (answer.correctStatus === +p) {
-                  score += 1;
+                if (answer.correctStatus !== (+p + 1)) {
+                  sortingCorrect = false;
                 }
+              }
+              if (sortingCorrect) {
+                score+=1;
               }
 
               break;
             case QuestionType.MULTIPLE_CHOICE:
-              console.log(`MULTIPLE_CHOICE> ${z++}`);
               if (givenAnswers[i].correctAnswers == null) {
                 throw new BadRequestException(
                   `Correct answer array not provided`,
@@ -131,35 +132,26 @@ export class QuizTakesService {
               correctIds.sort();
 
               // console.log(`MULTIPLE_CHOICE> ${JSON.stringify(correctIds)}`);
-
               const givenCorrectIds = givenAnswers[i].correctAnswers.sort();
 
               // console.log(`MULTIPLE_CHOICE> ${JSON.stringify(givenCorrectIds)}`);
-
               if (JSON.stringify(correctIds) === JSON.stringify(givenCorrectIds)) {
                 score += 1;
               }
 
               break;
             case QuestionType.SINGLE_CHOICE:
-              // console.log(`SINGLE_CHOICE> ${z++}`);
               if (givenAnswers[i].correctAnswerId == null) {
                 throw new BadRequestException(`Correct answer not provided`);
               }
-              // console.log(`SINGLE_CHOICE> ${z++}`);
-
-              // console.log(JSON.stringify(relatedAnswers, null, 4));
               const correct = relatedAnswers.filter(
                 (item) => item.correctStatus === 1,
               )[0];
-
-              // console.log(`SINGLE_CHOICE> ${z++}`);
               console.log(JSON.stringify(correct, null, 4));
               if (correct.id === givenAnswers[i].correctAnswerId) {
-                // console.log(`SINGLE_CHOICE> ${z++}`);
                 score += 1;
               }
-              // console.log(`SINGLE_CHOICE> ${z++}`);
+              
               break;
             default:
               throw new HttpException(
