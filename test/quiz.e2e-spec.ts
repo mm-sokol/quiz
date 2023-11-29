@@ -3,7 +3,6 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication } from '@nestjs/common';
 import { AppModule } from './../src/app.module';
 import { testDataSource } from 'test/utils/test-data-source';
-import { testUsers } from './utils/user.stub';
 import { testQuiz } from './utils/quiz.stub';
 import { testQuestions } from './utils/question.stub';
 
