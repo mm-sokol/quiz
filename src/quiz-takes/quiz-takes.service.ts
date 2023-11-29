@@ -123,37 +123,43 @@ export class QuizTakesService {
                   `Correct answer array not provided`,
                 );
               }
-              const correctIds = relatedAnswers
-                .filter((ans) => {
-                  ans.correctStatus === 1;
-                })
-                .map((ans) => ans.id)
-                .sort();
+
+              const correctAns = relatedAnswers
+                .filter((ans) => ans.correctStatus === 1);
+              
+              const correctIds = correctAns.map(ans => ans.id);
+              correctIds.sort();
+
+              // console.log(`MULTIPLE_CHOICE> ${JSON.stringify(correctIds)}`);
+
               const givenCorrectIds = givenAnswers[i].correctAnswers.sort();
-              if (correctIds === givenCorrectIds) {
+
+              // console.log(`MULTIPLE_CHOICE> ${JSON.stringify(givenCorrectIds)}`);
+
+              if (JSON.stringify(correctIds) === JSON.stringify(givenCorrectIds)) {
                 score += 1;
               }
 
               break;
             case QuestionType.SINGLE_CHOICE:
-              console.log(`SINGLE_CHOICE> ${z++}`);
+              // console.log(`SINGLE_CHOICE> ${z++}`);
               if (givenAnswers[i].correctAnswerId == null) {
                 throw new BadRequestException(`Correct answer not provided`);
               }
-              console.log(`SINGLE_CHOICE> ${z++}`);
+              // console.log(`SINGLE_CHOICE> ${z++}`);
 
-              console.log(JSON.stringify(relatedAnswers, null, 4));
+              // console.log(JSON.stringify(relatedAnswers, null, 4));
               const correct = relatedAnswers.filter(
                 (item) => item.correctStatus === 1,
               )[0];
 
-              console.log(`SINGLE_CHOICE> ${z++}`);
+              // console.log(`SINGLE_CHOICE> ${z++}`);
               console.log(JSON.stringify(correct, null, 4));
               if (correct.id === givenAnswers[i].correctAnswerId) {
-                console.log(`SINGLE_CHOICE> ${z++}`);
+                // console.log(`SINGLE_CHOICE> ${z++}`);
                 score += 1;
               }
-              console.log(`SINGLE_CHOICE> ${z++}`);
+              // console.log(`SINGLE_CHOICE> ${z++}`);
               break;
             default:
               throw new HttpException(
