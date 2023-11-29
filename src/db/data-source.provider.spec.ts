@@ -13,7 +13,4 @@ describe('DataSourceProvider', () => {
     // provider = module.get<Provider>(DataSourceProvider);
   });
 
-  // it('should be defined', () => {
-  //   expect(provider).toBeDefined();
-  // });
 });
