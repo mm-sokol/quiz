@@ -1,5 +1,7 @@
 import { Provider } from '@nestjs/common';
 import { join } from "path"
+import { Answer } from 'src/answers/entities/answer.entity';
+import { Question, Quiz, QuizTake, User } from 'src/internal';
 import { DataSource } from "typeorm"
 
 export const DataSourceProvider: Provider = {
@@ -14,7 +16,8 @@ export const DataSourceProvider: Provider = {
             database: "quizdb",
             synchronize: true,
             entities: [
-                './src/**/entities/*.entitiy.ts'
+                User, Answer, Question, Quiz, QuizTake
+                // './src/**/entities/*.entitiy.ts'
               ],
             migrations: [join(process.cwd(), 'src/**/migrations/*.{ts, js}') ],
         });
