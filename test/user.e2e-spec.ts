@@ -96,8 +96,20 @@ describe('Graphql UserResolver (e2e)', () => {
           })
         })
 
-        it('should raise not unique username error', async ()=>{
+        it('should raise not unique username error', async () => {
+            const response = await request(app.getHttpServer())
+                .post(gql)
+                .send({ query: `
+                mutation {
+                  createUser(createUserInput:${
+                    JSON.stringify(testUsers[0])
+                  }) {id, username, firstname, lastname, role}
+                }
+                `})
 
+            expect(response.body.errors).toBeDefined();
+            expect(response.body.errors).not.toHaveLength(0);
+            expect(response.body.errors[0].message).toMatch(new RegExp('\w*Username is already taken'));
         });
     });
 
