@@ -1,31 +1,10 @@
+import * as request from 'supertest';
 import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication } from '@nestjs/common';
-import * as request from 'supertest';
 import { AppModule } from './../src/app.module';
-import { UsersModule } from 'src/users/users.module';
-import { TypeOrmModule } from '@nestjs/typeorm';
-import { User } from 'src/users/entities/user.entity';
+import { testDataSource } from 'test/utils/test-data-source';
+import { testUsers, testUsersRecords } from './utils/user.stub';
 
-const users: User[] = [
-    {
-        id: 5,
-        username: "mouse",
-        firstname: "Mary",
-        lastname: "Hartford"
-    },
-    {
-        id: 6,
-        username: "alpaca",
-        firstname: "Zahary",
-        lastname: "Alpine"   
-    },
-    {
-        id: 7,
-        username: "zebra",
-        firstname: "Gregory",
-        lastname: "Gracia"   
-    }
-];
 
 const gql = '/graphql';
 
@@ -33,44 +12,92 @@ const gql = '/graphql';
 describe('Graphql UserResolver (e2e)', () => {
   let app: INestApplication;
 
-  beforeEach(async () => {
+  beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [
         AppModule
-    ],
+      ],
     }).compile();
 
     app = moduleFixture.createNestApplication();
     await app.init();
+    await testDataSource.initialize();
+    await testDataSource.dropDatabase();
   });
 
   afterAll(async () => {
+    await testDataSource.dropDatabase();
     await app.close();
   }); 
 
   describe(gql, () => {
     describe('users', () => {
-        // it('should return array of users', () => {
-        //     return request(app.getHttpServer())
-        //         .post(gql)
-        //         .send({ query: '{users {id, username, firstname, lastname}}' })
-        //         .expect(200)
-        //         .expect((res) => {
-        //             expect(res.body.data.users).toEqual(users);
-        //         })
-        // });
+        it.each(testUsers.map((e,i)=>[e, testUsersRecords[i]]))(
+          'should create test user', (input, result) => {
+            return request(app.getHttpServer())
+                .post(gql)
+                .send({ query: `
+                mutation {
+                  createUser(createUserInput:${
+                    JSON.stringify(input)
+                  }) {id, username, firstname, lastname, role}
+                }
+                `})
+                .expect(200)
+                .expect((res) => {
+                    expect(res.body.data.createUser).toEqual(result);
+                })
+        });
 
         it('should return one user details', () => {
             return request(app.getHttpServer())
                 .post(gql)
-                .send({ query: '{user(id: 7) {username, firstname}}' })
+                .send({ query: '{user(id: 1) {username, firstname}}' })
                 .expect(200)
                 .expect((res) => {
                     expect(res.body.data.user).toEqual({
-                        username: 'zebra',
-                        firstname: 'Gregory'
+                        username: testUsersRecords[0].username,
+                        firstname: testUsersRecords[0].firstname
                     })
                 })
+        });
+
+        it('should update user', () => {
+          return request(app.getHttpServer())
+          .post(gql)
+          .send({ query: `
+          mutation {
+            updateUser(id: 2, updateUserInput: {
+              lastname: "Radio"
+            }) {
+              lastname
+            }
+          }
+          `})
+          .expect(200)
+          .expect((res) => {
+              expect(res.body.data.updateUser).toEqual({lastname: "Radio"});
+          })
+        })
+
+        it('should get all users', () => {
+          return request(app.getHttpServer())
+          .post(gql)
+          .send({ query: `
+          {
+            users {
+              id
+            }
+          }
+          `})
+          .expect(200)
+          .expect((res) => {
+              expect(res.body.data.users).toEqual({lastname: "Radio"});
+          })
+        })
+
+        it('should raise not unique username error', async ()=>{
+
         });
     });
 
