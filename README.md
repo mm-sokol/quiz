@@ -3,7 +3,7 @@
 ```bash
 yarn install
 docker-compose up
-nest start
+yarn start:dev
 ```
 
 ### Entities
