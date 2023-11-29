@@ -1,6 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { UsersResolver } from './users.resolver';
 import { UsersService } from './users.service';
+import { User, UserRole } from './entities/user.entity';
 
 describe('UsersResolver', () => {
   let resolver: UsersResolver;
@@ -46,7 +47,9 @@ describe('UsersResolver', () => {
       id: expect.any(Number),
       username: input.username,
       firstname: input.firstname,
-      lastname: input.lastname
+      lastname: input.lastname,
+      role: UserRole.STUDENT,
+      quizTakes: []
     });
     expect(mockUserService.create).toHaveBeenCalled();
   });
@@ -56,7 +59,9 @@ describe('UsersResolver', () => {
     const input = {
       username: "parrot",
       firstname: "Zenon",
-      lastname: "Corrent"
+      lastname: "Zen",
+      role: UserRole.TEACHER,
+      quizTakes: []
     };
     expect(resolver.updateUser(3, input)).toEqual({
       id: 3, 

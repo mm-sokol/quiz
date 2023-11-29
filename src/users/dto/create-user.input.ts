@@ -19,5 +19,5 @@ export class CreateUserInput {
     (type) => UserRole,
     {nullable: true, defaultValue: UserRole.STUDENT}
   )
-  role: UserRole;
+  role?: UserRole;
 }
