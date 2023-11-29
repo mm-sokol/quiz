@@ -23,19 +23,42 @@ export class QuizesService {
       try {
         const quiz = manager.create(Quiz, createQuizInput);
         const savedQuiz = await manager.save(Quiz, quiz);
+        if (!savedQuiz) {
+          throw new BadRequestException(`Failed to create quiz`);
+        }
 
-        // const newQuiz = this.quizRepository.findOne({relations: {questions: {answers: true}}, where: {id: savedQuiz.id}});
-        // if (!newQuiz) {
-        //   throw new BadRequestException(`Failed to create quiz`);
-        // }
-        return savedQuiz;
+
+        for (let questionInput of createQuestionArray) {
+
+          const question = manager.create(Question, {
+            contents: questionInput.contents,
+            type: questionInput.type,
+            quizId: savedQuiz.id
+          });
+          const savedQuestion = await manager.save(Question, question);
+          if(!savedQuestion) {
+            throw new BadRequestException(`Failed to create question from ${JSON.stringify(questionInput)}`);
+          }
+
+          for (let answerInput of questionInput.answers) {
+            const answer = manager.create(Answer, {
+              ...answerInput, questionId: savedQuestion.id
+            });
+            const savedAnswer = manager.save(Answer, answer);
+            if(!savedAnswer) {
+              throw new BadRequestException(`Failed to create answer from ${JSON.stringify(answerInput)}`);
+            }
+          }
+
+        }
+        return manager.findOne(Quiz, {relations: {questions: {answers: true}}, where: {id:savedQuiz.id}});
       }
       catch (error) {
         throw new BadRequestException(`Transactoin failed: `+error.message);
       }
     });
     return quiz;
-  }
+  }q
 
   findAll() {
     return this.quizRepository.find({relations: {questions: {answers: true}}});
