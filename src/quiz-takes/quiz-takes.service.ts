@@ -59,7 +59,8 @@ export class QuizTakesService {
               }
 
               for (let answer of relatedAnswers) {
-                if (givenAnswers[i].text === answer.contents) {
+                if (givenAnswers[i].text.toLocaleLowerCase() 
+                === answer.contents.toLocaleLowerCase()) {
                   score +=1;
                   break;
                 }
