@@ -1,18 +1,32 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { BadRequestException, HttpException, HttpStatus, Inject, Injectable } from '@nestjs/common';
 import { CreateUserInput } from './dto/create-user.input';
 import { UpdateUserInput } from './dto/update-user.input';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from './entities/user.entity';
-import { Repository } from 'typeorm';
+import { DataSource, Repository } from 'typeorm';
 
 @Injectable()
 export class UsersService {
 
-  constructor(@InjectRepository(User) private userRepository: Repository<User> ) {}
+  constructor(
+    @Inject('DataSourceProvider') private readonly dataSource: DataSource,
+    @InjectRepository(User) private userRepository: Repository<User> ) {}
 
-  create(createUserInput: CreateUserInput) {
-    const user = this.userRepository.create(createUserInput);
-    return this.userRepository.save(user);
+  async create(createUserInput: CreateUserInput) {
+    const created = await this.dataSource.transaction(async manager => {
+      try {
+        const existing = await manager.findOneBy(User, {username: createUserInput.username});
+        if (existing) {
+          throw new BadRequestException('Username is already taken');
+        }
+        const user = manager.create(User, createUserInput);
+        return manager.save(User, user);
+        
+      } catch (error) {
+        throw new BadRequestException(`Transaction failed: ${error.message}`);
+      }
+    });
+    return created;
   }
 
   findAll() {
